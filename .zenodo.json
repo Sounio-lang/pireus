@@ -1,0 +1,48 @@
+{
+  "title": "PIREUS: Autonomous Operator Foundry, Hardware Capability Ontology, and Verifiable Reinforcement Learning Compiler Framework for Sounio",
+  "description": "<p><b>PIREUS</b> is an autonomous operator foundry, hardware-capability ontology engine, and verifiable reinforcement learning compiler framework designed for the Sounio programming language ecosystem.</p><p>It operates at the intersection of non-associative Cayley-Dickson hypercomplex algebras, formal silicon microarchitecture ontologies (x86_64 AVX-512, NVIDIA SM121 Blackwell, Apple Silicon, and AMD Alveo U250 FPGAs), interactive theorem proving in Lean 4 and Koka, and group-relative policy optimization (GRPO). PIREUS enforces strict, non-delegable semantic authority: external machine learning models propose untrusted mathematical operators and lowering schedules, while Sounio-native executables verify well-formedness, classify equivalence under the GL(4,2) semidirect gauge quotient group, and compute deterministic binary compiler-as-a-reward signals.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "Apache-2.0",
+  "creators": [
+    {
+      "name": "Agourakis, Demetrios Chiuratto",
+      "orcid": "0009-0001-8671-8878",
+      "affiliation": "Pontifícia Universidade Católica de São Paulo (PUC-SP); Faculdade São Leopoldo Mandic"
+    }
+  ],
+  "keywords": [
+    "operator foundry",
+    "hypercomplex algebra",
+    "Cayley-Dickson",
+    "sedenions",
+    "non-associative algebras",
+    "verifiable reinforcement learning",
+    "GRPO",
+    "hardware capability ontology",
+    "AVX-512",
+    "NVIDIA Blackwell SM121",
+    "Lean 4 formal verification",
+    "Sounio programming language"
+  ],
+  "subjects": [
+    {"term": "Computer Science - Programming Languages", "identifier": "cs.PL", "scheme": "url"},
+    {"term": "Computer Science - Distributed, Parallel, and Cluster Computing", "identifier": "cs.DC", "scheme": "url"},
+    {"term": "Computer Science - Artificial Intelligence", "identifier": "cs.AI", "scheme": "url"},
+    {"term": "Mathematics - Rings and Algebras", "identifier": "math.RA", "scheme": "url"}
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Sounio-lang/pireus",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.18726647",
+      "relation": "isPartOf",
+      "resource_type": "software",
+      "scheme": "doi"
+    }
+  ]
+}

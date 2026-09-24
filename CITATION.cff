@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+title: "PIREUS: Autonomous Operator Foundry, Hardware Capability Ontology, and Verifiable Reinforcement Learning Compiler Framework"
+message: >-
+  If you use this software or cite its formal receipts, please cite it using the metadata from this file.
+type: software
+authors:
+  - given-names: Demetrios
+    family-names: Chiuratto Agourakis
+    orcid: 'https://orcid.org/0009-0001-8671-8878'
+    affiliation: 'Pontifícia Universidade Católica de São Paulo (PUC-SP); Faculdade São Leopoldo Mandic'
+repository-code: 'https://github.com/Sounio-lang/pireus'
+url: 'https://github.com/Sounio-lang/pireus'
+abstract: >-
+  PIREUS is an autonomous operator foundry, hardware-capability ontology engine,
+  and verifiable reinforcement learning compiler framework designed for the Sounio
+  programming language ecosystem. It operates at the intersection of non-associative
+  Cayley-Dickson hypercomplex algebras, formal silicon microarchitecture ontologies
+  (x86_64 AVX-512, NVIDIA SM121 Blackwell, Apple Silicon, and AMD Alveo U250 FPGAs),
+  interactive theorem proving in Lean 4 and Koka, and group-relative policy
+  optimization (GRPO). PIREUS enforces strict, non-delegable semantic authority:
+  external machine learning models propose untrusted mathematical operators and
+  lowering schedules, while Sounio-native executables verify well-formedness,
+  classify equivalence under the GL(4,2) semidirect gauge quotient group, and
+  compute deterministic binary compiler-as-a-reward signals.
+keywords:
+  - operator foundry
+  - hypercomplex algebra
+  - Cayley-Dickson
+  - sedenions
+  - non-associative algebras
+  - verifiable reinforcement learning
+  - GRPO
+  - hardware capability ontology
+  - AVX-512
+  - NVIDIA Blackwell SM121
+  - Lean 4 formal verification
+  - Sounio programming language
+license: Apache-2.0
+version: 1.0.0
+date-released: '2026-09-24'
+preferred-citation:
+  type: software
+  authors:
+    - given-names: Demetrios
+      family-names: Chiuratto Agourakis
+      orcid: 'https://orcid.org/0009-0001-8671-8878'
+  title: 'PIREUS: Autonomous Operator Foundry, Hardware Capability Ontology, and Verifiable Reinforcement Learning Compiler Framework'
+  year: 2026
+  url: 'https://github.com/Sounio-lang/pireus'
+  version: 1.0.0
+  repository-code: 'https://github.com/Sounio-lang/pireus'
