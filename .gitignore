@@ -1,0 +1,12 @@
+# Build and temporary artifacts
+*.elf
+*.bin
+*.log
+*.partial
+__pycache__/
+*.py[cod]
+.lake/
+build/
+dist/
+target/
+.tmp/
