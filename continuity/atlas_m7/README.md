@@ -45,7 +45,7 @@ $$e_i \star e_j = \sigma_B(i, j) \, e_{i \oplus j}, \quad \sigma_B(i, j) = \text
 
 Foram selecionados 16 operadores representativos de classes inéditas e sintetizados formalmente:
 - **Taxa de Admissão**: 16/16 (100% ADMIT pelo oráculo nativo Sounio `/tmp/pireus_admission_engine.elf`).
-- **Recompensa Média GRPO**: 1.000 ($R = 1.0$ para todas as classes inéditas com $R_{syntax}=0.1, R_{admission}=0.4, R_{novelty}=0.5$).
+- **Recompensa Média Registrada**: 1.0. O lote foi pré-filtrado para classes não visitadas e cada termo é constante ($R_{syntax}=0.1$, $R_{admission}=0.4$, $R_{novelty}=0.5$), então o desvio é 0 e toda vantagem GRPO registrada é 0. Isso não é um sinal grupo-relativo.
 - **Kernels PTX Materializados**: 16 kernels `sm_121` com tabelas de sinais de fase bilinear calculadas formalmente pelo pipeline nativo do Sounio.
 
 | Índice | Fase | Classe | Defeito Comutador | $Q_{min}$ | Operadores na Classe | Decisão | Recompensa | Vantagem GRPO | Kernel PTX |
@@ -70,4 +70,4 @@ Foram selecionados 16 operadores representativos de classes inéditas e sintetiz
 ## 4. Ordem e Rigor Formal
 Em estrita conformidade com as invariantes do Sounio:
 - A autoridade semântica de admissão pertence exclusivamente ao executável nativo Sounio compilado.
-- Os tensores foram formalmente reconstruídos e verificados no hardware DGX Spark GB10 SM121.
+- Os 16 arquivos `.ptx` são fontes SM121 emitidas pelo pipeline nativo. Este diretório não contém receipt de carga, lançamento ou comparação numérica em GPU.

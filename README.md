@@ -19,8 +19,8 @@ $$\text{GARDEN} \longrightarrow \text{SOUNIO\_EXECUTABLE} \longrightarrow \text{
 
 - **Sounio Executable**: Sole `SEMANTIC_AUTHORITY`. Generates algebra tensors, checks well-formedness, defines canonical equivalence classes, and makes admission decisions (`admission.sio`).
 - **Lean 4**: `FORMAL_PARITY`. Formally proves gauge-coboundary rebase invariants, quotient group actions under $GL(4,2) \times C_2$, and exact partition coverings without `sorry`.
-- **Koka**: `EFFECT_PARITY`. Models algebraic effect topologics and phase transitions (*fail-closed*).
-- **C++ / PTX**: `MATERIAL_PARITY`. Validates cycle-accurate silicon measurements on targeted microarchitectures (Intel Xeon AVX-512, NVIDIA SM121 Blackwell, Apple Silicon, AMD Alveo U250).
+- **Koka**: declared as an `EFFECT_PARITY` role in the charter. This extraction contains no `.kk` sources, so that role is not instantiated here.
+- **C++ / PTX**: `MATERIAL_PARITY`. The repository contains lowering and probe sources for Intel Xeon AVX-512, NVIDIA SM121, Apple Silicon, and AMD Alveo U250. A probe source is not a recorded hardware run.
 - **LLMs (Inkling / Claude / GPT)**: `PROPOSAL_GENERATOR` & `REVIEW_ONLY`. External models propose candidates (`UntrustedProposal`); they **never** create expected outputs, define equivalence, or promote claims.
 - **Python / Rust**: Prohibited as semantic or expected-result oracles.
 
@@ -29,55 +29,56 @@ $$\text{GARDEN} \longrightarrow \text{SOUNIO\_EXECUTABLE} \longrightarrow \text{
 ## 2. Directory Layout
 
 - **`ontology/`**: Formal hardware capability descriptions and SPARQL queries over target nodes (`DarwinXeon`, `AppleSilicon`, `DGXSpark`, `AlveoU250`).
-- **`engine/`**: Operator morphogenesis, cubic operator forge, bilinear genesis, and native machine code emitters:
-  - `admission.sio`: The non-delegable admission boundary for external proposals.
-  - `materialize_ptx.sio`: GPU PTX generator for admitted operators supporting bilinear twists.
-  - `pireus_xor_materializer.sio`: 1004-byte static assembly artifact for Xeon AVX-512.
-- **`continuity/`**: Proposal generation, Slurm batch scheduling, paired canary benchmarking, and the **GRPO Verifiable Reward Engine** (`grpo_reward_engine.py`).
-- **`formal/`**: Lean 4 formal obligations and axiom audits (including `SounioPireusMultiProbePartitionV14.lean`).
+- **`engine/`**: Operator morphogenesis, cubic operator forge, bilinear genesis, and target-specific material probes, including `pireus_xor_materializer.sio`.
+- **`continuity/`**: The admission boundary (`admission.sio`), the SM121 PTX emitter (`materialize_ptx.sio`), proposal custody, paired benchmarking, and the **GRPO reward engine** (`grpo_reward_engine.py`).
+- **`formal/lean4/`**: Lean 4 parity obligations and axiom audits. `lakefile.lean` declares the PIREUS libraries and the imported `SounioCDCocycle` module. Historical receipts under `receipts/` bind earlier monorepo builds; they do not hash this standalone lakefile.
 - **`receipts/`**: Cryptographic formal parity receipts, hardware audits, and benchmark evidence.
 - **`scripts/ci/`**: Official gate scripts ensuring semantic boundaries, gate reference ratchets, and tensor invariant preservation.
 
 ---
 
-## 3. The Continuous Loop: Milestones M0 through M6
+## 3. Milestones
 
-| Milestone | Scope | Status | Acceptance Key |
-|---|---|---|---|
-| **M0** | Preservation & Lineage | `COMPLETE` | Full lineage, Walsh channel spectrum audited and preserved. |
-| **M1** | Compilador & Ontologia | `COMPLETE` | SPARQL ontology queries pass; Lean 4 V13/V14 proofs verified pure. |
-| **M2** | Runtime Spark / TP=2 | `PASS_FROZEN_OFFLINE_CANARY` | Slurm jobs on `spark-3c59` & `spark-8e54` with 32 GiB memory envelope. |
-| **M3** | Admissão de Propostas | `PASS_REAL_CANARY` | `admission.sio` accepts valid proposals and rejects all invalid/tampered variants. |
-| **M4** | Benchmark de Silício | `PASS_CANARY_NO_GAIN` | 16/16 candidate-node paired comparisons PASS (5120 exact component bits). |
-| **M5** | Novos Operadores | `IN_PROGRESS` | Multilinear tensor generation in $\mathbb{Z}^{16 \times 16 \times 16}$ & $GL(4,2)$ orbit separation. |
-| **M6** | Recompensa GRPO | `IN_PROGRESS` | Deterministic compiler-as-a-reward engine (`grpo_reward_engine.py`) with holdout validation. |
+`status.json` is a frozen monorepo ledger from 2026-09-10. It predates this extraction and is not the status of the tagged releases. The artifact-backed status is:
+
+| Milestone | Status in this repository | What is actually present |
+|---|---|---|
+| **M0–M4** | Recorded in the frozen ledger | The operational evidence named by `status.json` lives in the Sounio monorepo, not in this extraction. |
+| **M5** | Artifact present, tag `v1.1.0` | `continuity/atlas_m5/`: 16 admitted proposals, 16 distinct tensor hashes, 16 static SM121 PTX sources. Recorded mean reward is **0.975** (15×1.0 and one 0.6). |
+| **M6** | Reward engine present; holdout absent | `continuity/grpo_reward_engine.py` computes syntax, native-admission, and novelty terms. No train/holdout split or holdout receipt is implemented. |
+| **M7** | Computational artifacts present, tag `v1.2.0` | `continuity/atlas_m7/`: 65,536-matrix census, 32 orbit-class records, 20 classes marked unvisited relative to the encoded M5 phases, 16 selected proposals, 16 static SM121 PTX sources. Recorded mean reward is **1.0**. |
+
+PTX files are emitted source artifacts. This repository does not archive CUDA module-load, kernel-launch, device-identity, or numerical-output receipts for the M5 or M7 batches, so those batches are not hardware-execution evidence.
+
+The M7 reward is degenerate as a group-relative signal: candidates are prefiltered to unvisited classes and the novelty term is the constant 0.5, so every reward is 1.0, the standard deviation is 0, and every advantage is 0. The M5 batch is the non-degenerate example.
 
 ---
 
 ## 4. Building & Validating
 
-### Compile the Admission Engine
+The `.sio` sources import the Sounio compiler and standard library. Neither is vendored here. Build them with the `souc` that matches the Sounio commit you intend to treat as semantic authority; this repository does not pin that compiler by itself.
+
 ```sh
-souc engine/admission.sio /tmp/pireus_admission.elf
+souc continuity/admission.sio /tmp/pireus_admission.elf
 chmod +x /tmp/pireus_admission.elf
 python3 continuity/test_admission.py /tmp/pireus_admission.elf
 ```
 
-### Run GRPO Group-Relative Reward Evaluation
-```sh
-python3 continuity/grpo_reward_engine.py \
-    --admission-bin /tmp/pireus_admission.elf \
-    --context continuity/validation/deterministic-live-baseline-20260907/context.json \
-    --proposals-dir continuity/validation/deterministic-live-baseline-20260907 \
-    --output /tmp/grpo_rewards.json
-```
+GRPO evaluation needs that executable plus a context and a proposal directory. The historical path `continuity/validation/deterministic-live-baseline-20260907/` was not extracted. The checked-in atlas batches are result artifacts, not a self-contained rerun fixture.
 
-### Verify Lean 4 Parity Proofs
+### Lean 4
+
 ```sh
 cd formal/lean4
 lake build SounioPireusMultiProbePartitionV14
 lake build SounioPireusMultiProbePartitionV14AxiomAudit
 ```
+
+`lake build` without a target builds every declared PIREUS library. Several parity files use `native_decide`, so a full build is a finite-computation check, not a small structural proof. Axiom audits record that `native_decide` is outside the kernel-axiom-free claim.
+
+## 5. Citation
+
+There is no PIREUS DOI yet. `CITATION.cff` is the citation metadata. `.zenodo.json` relates this repository to the Sounio repository by URL. It does not reuse a Sounio Zenodo record as a PIREUS DOI. A DOI is added only after a PIREUS deposit is actually published.
 
 ---
 

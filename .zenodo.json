@@ -39,10 +39,10 @@
       "scheme": "url"
     },
     {
-      "identifier": "10.5281/zenodo.18726647",
+      "identifier": "https://github.com/Sounio-lang/sounio",
       "relation": "isPartOf",
       "resource_type": "software",
-      "scheme": "doi"
+      "scheme": "url"
     }
   ]
 }

@@ -13,11 +13,16 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ARCHIVE="/tmp/pireus-v1.0.0.tar.gz"
+VERSION="$(awk '/^version:/{print $2; exit}' "$ROOT_DIR/CITATION.cff")"
+if [ -z "$VERSION" ]; then
+    echo "Erro: version ausente em CITATION.cff" >&2
+    exit 1
+fi
+ARCHIVE="/tmp/pireus-v${VERSION}.tar.gz"
 
 echo "=== 1. Empacotando o repositório PIREUS para o Zenodo ==="
 cd "$ROOT_DIR"
-git archive --format=tar.gz --prefix=pireus-v1.0.0/ HEAD > "$ARCHIVE"
+git archive --format=tar.gz --prefix="pireus-v${VERSION}/" HEAD > "$ARCHIVE"
 ARCHIVE_SHA=$(sha256sum "$ARCHIVE" | awk '{print $1}')
 ARCHIVE_SIZE=$(du -h "$ARCHIVE" | cut -f1)
 echo "  Arquivo gerado: $ARCHIVE"
