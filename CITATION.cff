@@ -36,7 +36,7 @@ keywords:
   - Lean 4 formal verification
   - Sounio programming language
 license: Apache-2.0
-version: 1.1.0
+version: 1.2.0
 date-released: '2026-09-25'
 preferred-citation:
   type: software
@@ -47,5 +47,5 @@ preferred-citation:
   title: 'PIREUS: Autonomous Operator Foundry, Hardware Capability Ontology, and Verifiable Reinforcement Learning Compiler Framework'
   year: 2026
   url: 'https://github.com/Sounio-lang/pireus'
-  version: 1.1.0
+  version: 1.2.0
   repository-code: 'https://github.com/Sounio-lang/pireus'
