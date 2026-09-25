@@ -1,0 +1,546 @@
+[
+  {
+    "class_id": 0,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 0,
+    "canonical_min_raw_phase": 0,
+    "quadratic_codes_count": 1,
+    "raw_matrices_count": 64,
+    "square_negative_count": 15,
+    "commutator_defects": 210,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "class_id": 1,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 1,
+    "canonical_min_raw_phase": 1,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 7,
+    "commutator_defects": 210,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      0,
+      8
+    ]
+  },
+  {
+    "class_id": 2,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 8,
+    "canonical_min_raw_phase": 32768,
+    "quadratic_codes_count": 1,
+    "raw_matrices_count": 64,
+    "square_negative_count": 7,
+    "commutator_defects": 210,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      0,
+      8
+    ]
+  },
+  {
+    "class_id": 3,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 9,
+    "canonical_min_raw_phase": 32769,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 7,
+    "commutator_defects": 210,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      0,
+      8
+    ]
+  },
+  {
+    "class_id": 4,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 16,
+    "canonical_min_raw_phase": 2,
+    "quadratic_codes_count": 21,
+    "raw_matrices_count": 1344,
+    "square_negative_count": 11,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      4
+    ]
+  },
+  {
+    "class_id": 5,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 19,
+    "canonical_min_raw_phase": 35,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 3,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      12
+    ]
+  },
+  {
+    "class_id": 6,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 20,
+    "canonical_min_raw_phase": 36,
+    "quadratic_codes_count": 28,
+    "raw_matrices_count": 1792,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 7,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 24,
+    "canonical_min_raw_phase": 32770,
+    "quadratic_codes_count": 21,
+    "raw_matrices_count": 1344,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 8,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 27,
+    "canonical_min_raw_phase": 32803,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 9,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 28,
+    "canonical_min_raw_phase": 32804,
+    "quadratic_codes_count": 28,
+    "raw_matrices_count": 1792,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 10,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 64,
+    "canonical_min_raw_phase": 8,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 11,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      4
+    ]
+  },
+  {
+    "class_id": 11,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 65,
+    "canonical_min_raw_phase": 9,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 11,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      4
+    ]
+  },
+  {
+    "class_id": 12,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 66,
+    "canonical_min_raw_phase": 40,
+    "quadratic_codes_count": 42,
+    "raw_matrices_count": 2688,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 13,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 72,
+    "canonical_min_raw_phase": 32776,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 11,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      4
+    ]
+  },
+  {
+    "class_id": 14,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 73,
+    "canonical_min_raw_phase": 32777,
+    "quadratic_codes_count": 7,
+    "raw_matrices_count": 448,
+    "square_negative_count": 3,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      12
+    ]
+  },
+  {
+    "class_id": 15,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 74,
+    "canonical_min_raw_phase": 32808,
+    "quadratic_codes_count": 42,
+    "raw_matrices_count": 2688,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 16,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 80,
+    "canonical_min_raw_phase": 10,
+    "quadratic_codes_count": 42,
+    "raw_matrices_count": 2688,
+    "square_negative_count": 11,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      4
+    ]
+  },
+  {
+    "class_id": 17,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 82,
+    "canonical_min_raw_phase": 42,
+    "quadratic_codes_count": 21,
+    "raw_matrices_count": 1344,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 18,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 83,
+    "canonical_min_raw_phase": 43,
+    "quadratic_codes_count": 21,
+    "raw_matrices_count": 1344,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 19,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 84,
+    "canonical_min_raw_phase": 44,
+    "quadratic_codes_count": 84,
+    "raw_matrices_count": 5376,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 20,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 88,
+    "canonical_min_raw_phase": 32778,
+    "quadratic_codes_count": 42,
+    "raw_matrices_count": 2688,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 21,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 90,
+    "canonical_min_raw_phase": 32810,
+    "quadratic_codes_count": 21,
+    "raw_matrices_count": 1344,
+    "square_negative_count": 11,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      4
+    ]
+  },
+  {
+    "class_id": 22,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 91,
+    "canonical_min_raw_phase": 32811,
+    "quadratic_codes_count": 21,
+    "raw_matrices_count": 1344,
+    "square_negative_count": 3,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      12
+    ]
+  },
+  {
+    "class_id": 23,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 92,
+    "canonical_min_raw_phase": 32812,
+    "quadratic_codes_count": 84,
+    "raw_matrices_count": 5376,
+    "square_negative_count": 7,
+    "commutator_defects": 114,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      96,
+      8
+    ]
+  },
+  {
+    "class_id": 24,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 192,
+    "canonical_min_raw_phase": 72,
+    "quadratic_codes_count": 84,
+    "raw_matrices_count": 5376,
+    "square_negative_count": 9,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      6
+    ]
+  },
+  {
+    "class_id": 25,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 193,
+    "canonical_min_raw_phase": 73,
+    "quadratic_codes_count": 84,
+    "raw_matrices_count": 5376,
+    "square_negative_count": 9,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      6
+    ]
+  },
+  {
+    "class_id": 26,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 198,
+    "canonical_min_raw_phase": 1128,
+    "quadratic_codes_count": 28,
+    "raw_matrices_count": 1792,
+    "square_negative_count": 5,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      10
+    ]
+  },
+  {
+    "class_id": 27,
+    "is_unvisited_in_m5": false,
+    "min_quadratic_code": 199,
+    "canonical_min_raw_phase": 1129,
+    "quadratic_codes_count": 28,
+    "raw_matrices_count": 1792,
+    "square_negative_count": 5,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      10
+    ]
+  },
+  {
+    "class_id": 28,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 200,
+    "canonical_min_raw_phase": 32840,
+    "quadratic_codes_count": 84,
+    "raw_matrices_count": 5376,
+    "square_negative_count": 9,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      6
+    ]
+  },
+  {
+    "class_id": 29,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 201,
+    "canonical_min_raw_phase": 32841,
+    "quadratic_codes_count": 84,
+    "raw_matrices_count": 5376,
+    "square_negative_count": 5,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      10
+    ]
+  },
+  {
+    "class_id": 30,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 206,
+    "canonical_min_raw_phase": 33896,
+    "quadratic_codes_count": 28,
+    "raw_matrices_count": 1792,
+    "square_negative_count": 5,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      10
+    ]
+  },
+  {
+    "class_id": 31,
+    "is_unvisited_in_m5": true,
+    "min_quadratic_code": 207,
+    "canonical_min_raw_phase": 33897,
+    "quadratic_codes_count": 28,
+    "raw_matrices_count": 1792,
+    "square_negative_count": 9,
+    "commutator_defects": 90,
+    "associator_defects": 1848,
+    "associator_defect_sum": 3696,
+    "nearest_corpus_delta": [
+      0,
+      120,
+      6
+    ]
+  }
+]

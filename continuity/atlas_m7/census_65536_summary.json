@@ -1,0 +1,30 @@
+{
+  "total_matrices": 65536,
+  "census_duration_seconds": 0.988,
+  "rank_distribution": {
+    "0": 1,
+    "1": 225,
+    "2": 7350,
+    "3": 37800,
+    "4": 20160
+  },
+  "bilinear_form_types": {
+    "symmetric_count": 1024,
+    "alternating_count": 64,
+    "general_count": 64512
+  },
+  "defect_metrics": {
+    "associator_defect_constant": 3696,
+    "associator_defect_boolean_components": 1848,
+    "associator_defect_proof": "Identically preserved across all B due to group 2-cocycle identity over F_2",
+    "commutator_defect_distribution": {
+      "90": 28672,
+      "114": 35840,
+      "210": 1024
+    }
+  },
+  "gauge_fibres": {
+    "total_quadratic_codes": 1024,
+    "matrices_per_gauge_fibre": 64
+  }
+}
