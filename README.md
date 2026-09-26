@@ -56,6 +56,8 @@ The M7 reward is degenerate as a group-relative signal: candidates are prefilter
 
 ## 4. Building & Validating
 
+Run every verification in one pass with `continuity/verify_all.py`. It executes the Python unit tests, the 38 admission cases, the 1024-code oracle check, the 10 group-variance vectors, the eight-proposal batch, and all 16 Lean certificate targets. It stops on the first failure and emits one receipt.
+
 The `.sio` sources import the Sounio compiler and standard library. Neither is vendored here. Build them with the `souc` that matches the Sounio commit you intend to treat as semantic authority; this repository does not pin that compiler by itself.
 
 ```sh

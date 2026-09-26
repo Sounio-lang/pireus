@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """M8 reward-map tests. The class decision is not made here."""
 import json
+import os
 import subprocess
 import unittest
 from pathlib import Path
@@ -84,7 +85,7 @@ class NoveltyMapTest(unittest.TestCase):
         self.assertEqual(refused["reward"], 0.1)
 
     def test_live_group_variance_when_present(self):
-        binary = Path("/tmp/pireus_group_variance.elf")
+        binary = Path(os.environ.get("PIREUS_GROUP_VARIANCE", "/tmp/pireus_group_variance.elf"))
         if not binary.is_file():
             self.skipTest("native group variance is built on the Sounio workspace")
         stats = engine.group_statistics(binary, [600, 650, 949, 1000, 500, 500, 500, 500])
@@ -95,7 +96,7 @@ class NoveltyMapTest(unittest.TestCase):
         self.assertEqual(stats["centered_deviation"], [-399, 1, 2393, 2801, -1199, -1199, -1199, -1199])
 
     def test_live_oracle_when_present(self):
-        binary = Path("/tmp/pireus_novelty_oracle.elf")
+        binary = Path(os.environ.get("PIREUS_NOVELTY_ORACLE", "/tmp/pireus_novelty_oracle.elf"))
         if not binary.is_file():
             self.skipTest("native oracle is built on the Sounio workspace")
         expected = {

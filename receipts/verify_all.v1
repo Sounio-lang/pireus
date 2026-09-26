@@ -1,0 +1,38 @@
+schema=pireus-verify-all-v1
+status=PASS
+claim_ready=false
+completed_utc=2026-09-26T13:04:51Z
+
+elapsed_seconds=2.022
+
+admission_elf_sha256=321c4d9c61603dff4f258b3ef98a1ed41c46c086088e6e286f5e5bd84c75161a
+novelty_elf_sha256=63007d26532facb04ba93b8e956c616eb0b0256f4d908ba2197f068884c3e1d4
+group_elf_sha256=b96139b4d87dea6291cf3fec44f82240f08f3298a7e61c89de4c71eb0458b83e
+
+python_unit_tests=PASS
+admission_tests=PASS
+oracle_1024_codes=PASS 0.486s
+group_variance_10_vectors=PASS 0.063s
+m8_batch=PASS 0.112s
+lean_certificates=PASS 1.004s
+
+oracle_codes_checked=1024
+oracle_mismatches=0
+group_vectors_checked=10
+group_mismatches=0
+m8_reward_sum=5199
+m8_centered_sum_squares=19481656
+m8_variance_denominator=512
+m8_advantage_degenerate=false
+m8_holdout_count=4
+m8_admitted_count=8
+lean_targets=16
+lean_toolchain=leanprover/lean4:v4.33.0
+
+compiler=committed prebuilt bin/madaros-linux-x86_64
+compiler_sha256=31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80
+compiler_from_source=false
+gpu_execution=false
+host=Linux 7.0.2-5-pve x86_64
+script=continuity/verify_all.py
+script_sha256=4e337779494501e0ba52b2a782ce2e0e7e39499b3644992942bc06961c511dfb
