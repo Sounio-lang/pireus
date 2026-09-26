@@ -1,0 +1,6 @@
+import SounioPireusAdmissionReward
+
+open SounioPireusAdmissionReward
+
+#print axioms admission_reward_constants
+#print axioms admission_reward_does_not_promote_a_claim

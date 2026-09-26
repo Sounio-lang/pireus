@@ -330,6 +330,12 @@ lean_lib «SounioPireusQuadraticPhaseToCode» where
 lean_lib «SounioPireusQuadraticPhaseToCodeAxiomAudit» where
 
 @[default_target]
+lean_lib «SounioPireusAdmissionReward» where
+
+@[default_target]
+lean_lib «SounioPireusAdmissionRewardAxiomAudit» where
+
+@[default_target]
 lean_lib «SounioPireusSignTableBitVecLex» where
 
 @[default_target]

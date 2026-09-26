@@ -1,0 +1,27 @@
+schema=pireus-admission-reward-v1
+status=PASS
+stage=FINITE_COMPUTATIONAL_PARITY_ONLY
+claim_ready=false
+completed_utc=2026-09-26T12:24:25Z
+
+theorem=SounioPireusAdmissionReward.admission_reward_constants
+semantic_refusal_reward_milli=100
+lowering_reward_milli=800
+syntax_thousandths=100
+admission_thousandths=400
+lowering_unclassified_term=300
+
+source=continuity/admission.sio
+source_sha256=abfd8bd658536853b396d874e0d2903074082cbcdef5d83530aa7f4a68be3247
+certificate_sha256=7999b3da681460354d832f053eb12d238aadd3605ec9f49492cbac46617ba25b
+orbit_enumeration=false
+admission_decided=false
+executable_binding_proved=false
+kernel_axiom_free=false
+
+axiom_audit=admission_reward_constants._native.native_decide.ax_1_1
+claim_boundary_axioms=none
+build_target=lake build SounioPireusAdmissionReward SounioPireusAdmissionRewardAxiomAudit
+build_elapsed_seconds=7
+certificate_build_seconds=0.483
+toolchain=leanprover/lean4:v4.33.0
