@@ -74,6 +74,14 @@ class NoveltyMapTest(unittest.TestCase):
         self.assertNotEqual(centered, 0)
         self.assertEqual(len(rewards) ** 3, 512)
 
+    def test_component_split_follows_the_native_total(self):
+        row = {}
+        engine.apply_reward_milli(row, 949)
+        self.assertEqual((row["syntax_reward"], row["admission_reward"], row["novelty_reward"], row["reward"]), (0.1, 0.4, 0.449, 0.949))
+        refused = {}
+        engine.apply_reward_milli(refused, 100)
+        self.assertEqual((refused["syntax_reward"], refused["admission_reward"], refused["novelty_reward"]), (0.1, 0.0, 0.0))
+
     def test_live_group_variance_when_present(self):
         binary = Path("/tmp/pireus_group_variance.elf")
         if not binary.is_file():

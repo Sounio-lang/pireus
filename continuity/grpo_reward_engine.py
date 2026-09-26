@@ -60,6 +60,17 @@ def novelty_from_classification(receipt: dict) -> dict:
         return {"novelty_reward": novelty, "novelty_source": "train_corpus", "split": "train"}
     return {"novelty_reward": novelty, "novelty_source": "unvisited_graded", "split": "train"}
 
+def apply_reward_milli(result: dict, reward_milli: int) -> None:
+    """Split one native total. Nothing here chooses the total."""
+    if reward_milli < 0 or reward_milli > 1000:
+        raise ValueError(f"REWARD_MILLI_OUT_OF_RANGE:{reward_milli}")
+    result["reward_milli"] = reward_milli
+    result["reward"] = reward_milli / 1000.0
+    result["syntax_reward"] = min(reward_milli, 100) / 1000.0
+    result["admission_reward"] = min(max(reward_milli - 100, 0), 400) / 1000.0
+    result["novelty_reward"] = max(reward_milli - 500, 0) / 1000.0
+
+
 def compute_proposal_reward(
     admission_bin: Path,
     context_path: Path,
@@ -103,8 +114,6 @@ def compute_proposal_reward(
         result["reason"] = "MALFORMED_ROOT_OBJECT"
         return result
 
-    result["syntax_reward"] = 0.1
-
     # Run native Sounio admission engine
     try:
         proc = subprocess.run(
@@ -136,13 +145,11 @@ def compute_proposal_reward(
     if decision != "ADMIT":
         result["reason"] = receipt.get("reason", "REFUSED")
         if receipt.get("reward_milli") is not None:
-            result["reward_milli"] = int(receipt["reward_milli"])
-            result["reward"] = result["reward_milli"] / 1000.0
+            apply_reward_milli(result, int(receipt["reward_milli"]))
         return result
 
     # Admitted
     result["admitted"] = True
-    result["admission_reward"] = 0.4
     result["plan_id"] = receipt.get("plan_id")
     result["tensor_sha256"] = receipt.get("tensor_sha256")
 
@@ -152,9 +159,7 @@ def compute_proposal_reward(
             result["reason"] = "LOWERING_REWARD_MISSING"
             return result
         result["novelty_source"] = "unclassified_lowering"
-        result["reward_milli"] = int(receipt["reward_milli"])
-        result["reward"] = result["reward_milli"] / 1000.0
-        result["novelty_reward"] = (result["reward_milli"] - 500) / 1000.0
+        apply_reward_milli(result, int(receipt["reward_milli"]))
         return result
 
     if novelty_bin is None:
@@ -171,9 +176,7 @@ def compute_proposal_reward(
     result.update(graded)
     result["novelty_milli"] = int(classification["novelty_milli"])
     result["admitted_reward_milli"] = int(classification["admitted_reward_milli"])
-    result["reward_milli"] = result["admitted_reward_milli"]
-    result["reward"] = result["reward_milli"] / 1000.0
-    result["novelty_reward"] = graded["novelty_reward"]
+    apply_reward_milli(result, result["admitted_reward_milli"])
     result["class_id"] = classification.get("class_id")
     result["corpus_distance"] = classification.get("corpus_distance")
     result["train_visited"] = classification.get("train_visited")
