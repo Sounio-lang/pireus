@@ -71,8 +71,8 @@ def compute_proposal_reward(
     Reward:
       reward_milli is the authority. reward is that integer divided by 1000.
       Admitted kind=2 copies admitted_reward_milli from the oracle. Without the
-      oracle its novelty term stays 0. Kind=1 remains the fixed 800 thousandths
-      labeled unclassified. A nonzero phase never scores novelty by itself.
+      oracle its novelty term stays 0. Kind=1 copies reward_milli from the
+      admission receipt. A nonzero phase never scores novelty by itself.
     """
     result = {
         "proposal": str(proposal_path),
@@ -149,10 +149,13 @@ def compute_proposal_reward(
 
     kind = data.get("kind", 1)
     if kind != 2:
-        result["novelty_reward"] = 0.3
+        if receipt.get("reward_milli") is None:
+            result["reason"] = "LOWERING_REWARD_MISSING"
+            return result
         result["novelty_source"] = "unclassified_lowering"
-        result["reward_milli"] = 800
+        result["reward_milli"] = int(receipt["reward_milli"])
         result["reward"] = result["reward_milli"] / 1000.0
+        result["novelty_reward"] = (result["reward_milli"] - 500) / 1000.0
         return result
 
     if novelty_bin is None:

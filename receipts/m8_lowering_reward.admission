@@ -1,0 +1,25 @@
+schema=pireus-m8-lowering-reward-admission-v1
+status=PASS
+stage=LOWERING_REWARD_MILLI
+claim_ready=false
+completed_utc=2026-09-26T10:37:00Z
+
+kind=lowering
+reward_milli=800
+composition=syntax 100 + admission 400 + fixed unclassified term 300
+novelty_classified=false
+operator_reward_field=absent
+admission_tests=37
+operator_batch_reward_sum=5199
+operator_batch_changed=false
+
+admission_source=continuity/admission.sio
+admission_source_sha256=e54d3808edbbfee6c258a39ece1acf27d2312866361a2fd3b8c13b96081389e6
+admission_elf_sha256=a5cee656b79f655ffa3459918ec74b58b9288313fc4f98cce7334d586fa9bcd1
+previous_admission_elf_sha256=a1d17b8ad6e760ea8b9536174e55d62bccb92a6b449e83144b9f5a62e033fd74
+compiler=committed prebuilt bin/madaros-linux-x86_64
+compiler_sha256=31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80
+compiler_from_source=false
+compiler_claim=false
+gpu_execution=false
+host=Linux 7.0.2-5-pve x86_64

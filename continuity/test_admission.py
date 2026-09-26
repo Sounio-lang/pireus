@@ -28,6 +28,7 @@ def main():
    print(label,json.dumps(receipt),flush=True)
    return receipt
   first=check("positive")
+  assert first["kind"]=="lowering" and first["reward_milli"]==800, first
   second=check("permuted-layout-schedule",changes=dict(lane_stride=15,lane_offset=13,load=0,layout=1,unroll=16))
   assert first["plan_id"]!=second["plan_id"] and first["tensor_sha256"]==second["tensor_sha256"]
   for label,reason,changes in [
@@ -63,7 +64,7 @@ def main():
   # constant itself, so its tensor must be byte-identical to the kind=1 tensor:
   # the twist is an extension of the admitted algebra, not a replacement for it.
   base=check("operator-phase-0",changes=dict(kind=2,phase=0))
-  assert base["kind"]=="operator" and base["phase_code"]==0,base
+  assert base["kind"]=="operator" and base["phase_code"]==0 and "reward_milli" not in base,base
   assert base["tensor_sha256"]==first["tensor_sha256"],(base,first)
   # Well-definedness is all this engine establishes. Novelty belongs to the
   # GL(4,2) atlas and must stay undischarged in the receipt.

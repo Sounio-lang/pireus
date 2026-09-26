@@ -305,7 +305,9 @@ fn main() -> i32 with IO, Mut, Panic, Div {
         print(",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n")
         return 0
     }
-    print("{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"lowering\",\"plan_id\":")
+    // kind=1 has no orbit class. Its fixed term is 300 thousandths on top of
+    // syntax 100 and admission 400. This is not a novelty classification.
+    print("{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"lowering\",\"reward_milli\":800,\"plan_id\":")
     print_int(plan_id)
     print(",\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"")
     print_digest(sha256_finalize(state))
