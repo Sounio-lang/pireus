@@ -33,7 +33,6 @@ python3 verify_all.py \
   --novelty-bin "$WORK_DIR/novelty.elf" \
   --group-bin "$WORK_DIR/group_variance.elf" \
   --lean-dir "$LEAN_DIR" \
-  --skip-exhaustive \
   2>&1
 
 echo "=== Done ==="

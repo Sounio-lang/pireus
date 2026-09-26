@@ -46,8 +46,6 @@ def main():
     parser.add_argument("--novelty-bin", type=Path, default=None)
     parser.add_argument("--group-bin", type=Path, default=None)
     parser.add_argument("--lean-dir", type=Path, default=None)
-    parser.add_argument("--skip-exhaustive", action="store_true",
-                        help="Skip the 65536-phase check (needs the explorer tree)")
     parser.add_argument("--skip-lean", action="store_true",
                         help="Skip Lean certificate builds")
     args = parser.parse_args()
@@ -107,12 +105,11 @@ def main():
             "admitted_count": batch["admitted_count"],
         }
 
-        # 7. Exhaustive 65536-phase check (needs the explorer tree)
-        if not args.skip_exhaustive:
-            out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
-                       "--oracle", str(args.novelty_bin)],
-                      "oracle-65536-phases", timeout=600)
-            results["oracle_65536"] = json.loads(out)
+        # 7. Exhaustive 65536-phase check
+        out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
+                   "--oracle", str(args.novelty_bin)],
+                  "oracle-65536-phases", timeout=600)
+        results["oracle_65536"] = json.loads(out)
     else:
         results["elf_checks"] = "skipped_no_binaries"
 
