@@ -508,7 +508,8 @@ class PireusAutonomousExplorer:
             # Compute scalar reward:
             # Syntax: 0.1
             # Admission: 0.4
-            # Novelty: 0.5 (unvisited class with non-zero phase)
+            # Historical M7 recording. This constant predates the M8 oracle.
+            # New evaluations go through continuity/grpo_reward_engine.py.
             r_syntax = 0.1
             r_admission = 0.4
             r_novelty = 0.5

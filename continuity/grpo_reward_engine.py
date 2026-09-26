@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """
-Pireus M6: GRPO (Group Relative Policy Optimization) Verifiable Reward Engine.
-Semantic authority belongs exclusively to Sounio (via admission.sio).
-Computes exact scalar rewards R(y) in [0.0, 1.0] for model proposals.
+Pireus M6/M8 GRPO reward engine.
+
+admission.sio decides well-formedness. novelty_oracle.sio decides the orbit
+class, whether that class belongs to the frozen M5 training corpus, whether
+it is in the fixed holdout, and its integer distance to the Cayley-Dickson
+class. Python applies only the published scalar map below. It does not infer
+a class from a nonzero phase.
 """
 import argparse
 import hashlib
@@ -13,15 +17,57 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+CORPUS_DISTANCE_DENOMINATOR = 130
+HOLDOUT_CLASSES = (1, 2, 11, 23)
 
-def compute_proposal_reward(admission_bin: Path, context_path: Path, proposal_path: Path) -> dict:
+def classify_phase(novelty_bin: Path, phase: int) -> dict:
+    proc = subprocess.run(
+        [str(novelty_bin), str(int(phase))],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    if not proc.stdout.strip():
+        raise RuntimeError(proc.stderr.strip() or "EMPTY_NOVELTY_OUTPUT")
+    return json.loads(proc.stdout)
+
+def novelty_from_classification(receipt: dict) -> dict:
+    """Map one oracle receipt to the published scalar. Holdout gets no reward."""
+    if receipt.get("decision") != "CLASSIFIED":
+        return {"novelty_reward": 0.0, "novelty_source": "oracle_refused", "split": None}
+    distance = int(receipt["corpus_distance"])
+    if distance < 0 or distance > CORPUS_DISTANCE_DENOMINATOR:
+        raise ValueError(f"CORPUS_DISTANCE_OUT_OF_RANGE:{distance}")
+    graded = 0.2 + 0.3 * (distance / CORPUS_DISTANCE_DENOMINATOR)
+    if int(receipt["holdout"]) == 1:
+        return {
+            "novelty_reward": 0.0,
+            "held_out_novelty": graded,
+            "novelty_source": "holdout_excluded",
+            "split": "holdout",
+        }
+    if int(receipt["train_visited"]) == 1:
+        return {
+            "novelty_reward": 0.1 if distance == 0 else 0.15,
+            "novelty_source": "train_corpus",
+            "split": "train",
+        }
+    return {"novelty_reward": graded, "novelty_source": "unvisited_graded", "split": "train"}
+
+def compute_proposal_reward(
+    admission_bin: Path,
+    context_path: Path,
+    proposal_path: Path,
+    novelty_bin: Path | None = None,
+) -> dict:
     """
     Evaluates an untrusted model proposal using Sounio's native admission engine.
-    Reward Structure:
-      R_syntax:    0.1 (Strict schema, valid JSON, ASCII keys, expected fields)
-      R_admission: 0.4 (Valid tensor reconstruction, lane coverage, decision == "ADMIT")
-      R_novelty:   0.5 (Separation against atlas / GL(4,2) quotient distance > 0)
-    Total R in [0.0, 1.0].
+    Reward:
+      syntax 0.1, native admission 0.4, and novelty from novelty_from_classification.
+      A kind=2 proposal without the oracle scores novelty 0. It never scores 0.5
+      merely because its phase is nonzero. Kind=1 remains a fixed 0.3 lowering
+      term and is labeled unclassified.
     """
     result = {
         "proposal": str(proposal_path),
@@ -94,24 +140,30 @@ def compute_proposal_reward(admission_bin: Path, context_path: Path, proposal_pa
     result["plan_id"] = receipt.get("plan_id")
     result["tensor_sha256"] = receipt.get("tensor_sha256")
 
-    # Novelty evaluation
-    # If proposal specifies an operator (kind=2) or candidate with non-colliding orbit
     kind = data.get("kind", 1)
-    if kind == 2:
-        phase = data.get("phase", 0)
-        # Sounio operator atlas distance:
-        # Phase 0 is identical to Cayley-Dickson 16 (collision). Nonzero phase gives new tensor.
-        if phase != 0:
-            result["novelty_reward"] = 0.5
-            result["reward"] += 0.5
-        else:
-            result["novelty_reward"] = 0.1  # Valid algebra, but known CD16 orbit
-            result["reward"] += 0.1
-    else:
-        # Lowering proposal: novelty relative to baseline layout
+    if kind != 2:
         result["novelty_reward"] = 0.3
+        result["novelty_source"] = "unclassified_lowering"
         result["reward"] += 0.3
+        return result
 
+    if novelty_bin is None:
+        result["reason"] = "NOVELTY_ORACLE_MISSING"
+        result["novelty_source"] = "missing_oracle"
+        return result
+    try:
+        classification = classify_phase(novelty_bin, int(data.get("phase", -1)))
+    except Exception as exc:
+        result["reason"] = f"NOVELTY_ORACLE_FAILED: {exc}"
+        result["novelty_source"] = "oracle_failed"
+        return result
+    graded = novelty_from_classification(classification)
+    result.update(graded)
+    result["novelty_reward"] = graded["novelty_reward"]
+    result["reward"] += graded["novelty_reward"]
+    result["class_id"] = classification.get("class_id")
+    result["corpus_distance"] = classification.get("corpus_distance")
+    result["train_visited"] = classification.get("train_visited")
     return result
 
 def evaluate_group_relative_advantages(group_results: list, epsilon: float = 1e-8) -> list:
@@ -132,6 +184,7 @@ def evaluate_group_relative_advantages(group_results: list, epsilon: float = 1e-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--admission-bin", type=Path, required=True, help="Compiled Sounio admission engine ELF")
+    parser.add_argument("--novelty-bin", type=Path, help="Compiled Sounio novelty oracle ELF")
     parser.add_argument("--context", type=Path, required=True, help="Research context JSON")
     parser.add_argument("--proposals-dir", type=Path, required=True, help="Directory containing .proposal.json files")
     parser.add_argument("--output", type=Path, help="Output JSON results")
@@ -144,13 +197,20 @@ def main():
 
     results = []
     for p in proposal_files:
-        res = compute_proposal_reward(args.admission_bin, args.context, p)
+        res = compute_proposal_reward(args.admission_bin, args.context, p, args.novelty_bin)
         results.append(res)
 
     results = evaluate_group_relative_advantages(results)
 
+    rewards = [r["reward"] for r in results]
+    mean_r = sum(rewards) / len(rewards) if rewards else 0.0
+    variance = sum((r - mean_r) ** 2 for r in rewards) / len(rewards) if len(rewards) > 1 else 0.0
+    holdout_rows = [r for r in results if r.get("split") == "holdout"]
     output_payload = {
-        "schema": "pireus-grpo-reward-batch-v1",
+        "schema": "pireus-grpo-reward-batch-v2",
+        "holdout_classes": list(HOLDOUT_CLASSES),
+        "holdout_count": len(holdout_rows),
+        "advantage_degenerate": variance == 0.0,
         "evaluator": "Sounio-Native-Admission-Engine",
         "context_file": str(args.context),
         "total_proposals": len(results),
