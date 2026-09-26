@@ -105,11 +105,15 @@ def main():
             "admitted_count": batch["admitted_count"],
         }
 
-        # 7. Exhaustive 65536-phase check
-        out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
-                   "--oracle", str(args.novelty_bin)],
-                  "oracle-65536-phases", timeout=600)
-        results["oracle_65536"] = json.loads(out)
+        # 7. Exhaustive 65536-phase check (needs numpy for the explorer)
+        try:
+            import numpy  # noqa: F401
+            out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
+                       "--oracle", str(args.novelty_bin)],
+                      "oracle-65536-phases", timeout=600)
+            results["oracle_65536"] = json.loads(out)
+        except ImportError:
+            results["oracle_65536"] = "skipped_no_numpy"
     else:
         results["elf_checks"] = "skipped_no_binaries"
 
