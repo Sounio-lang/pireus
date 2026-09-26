@@ -64,8 +64,10 @@ class NoveltyMapTest(unittest.TestCase):
         rewards = (600, 650, 949, 1000, 500, 500, 500, 500)
         total = sum(rewards)
         centered = sum((len(rewards) * reward - total) ** 2 for reward in rewards)
+        deviations = [len(rewards) * reward - total for reward in rewards]
         self.assertEqual(total, 5199)
         self.assertEqual(centered, 19481656)
+        self.assertEqual(deviations, [-399, 1, 2393, 2801, -1199, -1199, -1199, -1199])
         self.assertNotEqual(centered, 0)
         self.assertEqual(len(rewards) ** 3, 512)
 
@@ -78,6 +80,7 @@ class NoveltyMapTest(unittest.TestCase):
         self.assertEqual(stats["reward_sum"], 5199)
         self.assertEqual(stats["centered_sum_squares"], 19481656)
         self.assertEqual(stats["variance_denominator"], 512)
+        self.assertEqual(stats["centered_deviation"], [-399, 1, 2393, 2801, -1199, -1199, -1199, -1199])
 
     def test_live_oracle_when_present(self):
         binary = Path("/tmp/pireus_novelty_oracle.elf")

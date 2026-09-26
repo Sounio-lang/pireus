@@ -186,8 +186,14 @@ def group_statistics(group_bin: Path, reward_millis: list[int]) -> dict:
     stats = json.loads(proc.stdout)
     if stats.get("decision") != "COMPUTED" or stats.get("claim_ready") is not False:
         raise RuntimeError(f"GROUP_VARIANCE_REFUSED:{stats}")
-    if int(stats["count"]) != len(reward_millis) or int(stats["variance_numerator"]) != int(stats["centered_sum_squares"]):
+    deviations = [int(item) for item in stats["centered_deviation"]]
+    if (
+        int(stats["count"]) != len(reward_millis)
+        or int(stats["variance_numerator"]) != int(stats["centered_sum_squares"])
+        or len(deviations) != len(reward_millis)
+    ):
         raise RuntimeError(f"GROUP_VARIANCE_SHAPE:{stats}")
+    stats["centered_deviation"] = deviations
     return stats
 
 

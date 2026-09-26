@@ -1,8 +1,9 @@
 // Integer population variance of a GRPO group.
-// Each argument is one reward in thousandths. The centered sum of squares is
-// Σ (count * reward - sum)^2, and the variance denominator is count^3.
-// Zero centered sum is the only degeneracy bit. This does not classify a
-// phase, admit a proposal, or promote a claim.
+// Each argument is one reward in thousandths. The centered deviation of a
+// reward is count * reward - sum. Its square sums to the population moment,
+// whose denominator is count^3. The signed deviations are the advantage
+// numerators. This executable does not divide by a standard deviation,
+// classify a phase, admit a proposal, or promote a claim.
 
 fn parse_milli(text: string) -> i64 with Mut {
     let n = str_len(text)
@@ -42,12 +43,15 @@ fn main() -> i32 with IO, Mut, Panic {
         sum = sum + rewards[index as usize]
         index = index + 1
     }
+    var deviations: [i64; 16] = [0; 16]
     var centered: i64 = 0
     index = 0
     while index < count {
-        var diff = count * rewards[index as usize] - sum
-        if diff < 0 { diff = 0 - diff }
-        centered = centered + diff * diff
+        let diff = count * rewards[index as usize] - sum
+        deviations[index as usize] = diff
+        var magnitude = diff
+        if magnitude < 0 { magnitude = 0 - magnitude }
+        centered = centered + magnitude * magnitude
         index = index + 1
     }
     let denominator = count * count * count
@@ -65,6 +69,13 @@ fn main() -> i32 with IO, Mut, Panic {
     print_int(denominator)
     print(",\"degenerate\":")
     print(degenerate)
-    print(",\"claim_ready\":false}\n")
+    print(",\"centered_deviation\":[")
+    index = 0
+    while index < count {
+        if index > 0 { print(",") }
+        print_int(deviations[index as usize])
+        index = index + 1
+    }
+    print("],\"claim_ready\":false}\n")
     0
 }

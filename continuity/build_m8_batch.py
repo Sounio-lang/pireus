@@ -79,15 +79,20 @@ def main():
         row["reward_milli"] = 500 + int(row["novelty_milli"])
         rows.append(row)
     stats = engine.group_statistics(args.group_bin, [row["reward_milli"] for row in rows])
+    for row, deviation in zip(rows, stats["centered_deviation"]):
+        row["centered_deviation"] = deviation
     holdout_millis = [row["reward_milli"] for row in rows if row.get("split") == "holdout"]
+    holdout_deviations = [row["centered_deviation"] for row in rows if row.get("split") == "holdout"]
     payload = {
-        "schema": "pireus-grpo-reward-batch-v4",
+        "schema": "pireus-grpo-reward-batch-v5",
         "claim_ready": False,
         "historical_atlas_rewritten": False,
         "supersedes_prior_batches": False,
         "degeneracy_authority": "continuity/group_variance.sio",
         "holdout_classes": list(engine.HOLDOUT_CLASSES),
         "holdout_count": len(holdout_millis),
+        "advantage_numerator": "centered_deviation",
+        "std_division": False,
         "advantage_degenerate": bool(stats["degenerate"]),
         "reward_sum": int(stats["reward_sum"]),
         "centered_sum_squares": int(stats["centered_sum_squares"]),
@@ -102,8 +107,14 @@ def main():
     if payload["admitted_count"] != len(CASES) or payload["advantage_degenerate"] or payload["holdout_count"] != 4:
         print(json.dumps(payload, indent=2), file=sys.stderr)
         return 1
-    if len(set(holdout_millis)) != 1:
+    if len(set(holdout_millis)) != 1 or len(set(holdout_deviations)) != 1:
         print("holdout rewards differ", file=sys.stderr)
+        return 1
+    if stats["centered_deviation"] != [-399, 1, 2393, 2801, -1199, -1199, -1199, -1199]:
+        print("centered deviations do not match the published eight rewards", file=sys.stderr)
+        return 1
+    if all(deviation == 0 for deviation in stats["centered_deviation"]):
+        print("every centered deviation is zero", file=sys.stderr)
         return 1
     if any(row["reward_milli"] >= 1000 for row in rows if row.get("novelty_source") == "train_corpus"):
         print("visited corpus reward reached 1000 thousandths", file=sys.stderr)
