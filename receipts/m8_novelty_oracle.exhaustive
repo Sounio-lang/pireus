@@ -1,0 +1,25 @@
+schema=pireus-m8-novelty-oracle-exhaustive-v1
+status=PASS
+stage=ORACLE_TABLE_CHECKED
+claim_ready=false
+completed_utc=2026-09-26T00:15:58Z
+
+phases_checked=65536
+mismatches=0
+orbit_classes=32
+inventory_rows_matched=32
+fibres_are_64_matrices=true
+holdout_classes=1,2,11,23
+elapsed_seconds=25.576
+
+oracle_source=continuity/novelty_oracle.sio
+oracle_source_sha256=37916fe406954168d0408bd7595c39254cdd40cd7c441f26a68ab6efb26d6f85
+oracle_elf_sha256=14abbf0f229c3d45bf1a600b42f443d39438bd0049c925b511b751dbfdbb517b
+inventory=continuity/atlas_m7/orbit_classes_inventory.json
+comparison=fresh tools/pireus_autonomous_explorer.py partition against the native executable and the committed inventory
+independent_existence_proof=false
+gpu_execution=false
+host=Linux 7.0.2-5-pve x86_64
+
+matched_fields=class_id,min_quadratic_code,quadratic_codes_count,raw_matrices_count,commutator_defects,square_negative_count,is_unvisited_in_m5
+matched_oracle_fields=quadratic_code,class_id,train_visited,holdout,commutator_defect,square_negative_count,corpus_distance,claim_ready
