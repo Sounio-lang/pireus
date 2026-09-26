@@ -4,9 +4,11 @@
 
   The four 32-entry tables are copied from `continuity/novelty_oracle.sio`:
   commutator defect, negative-square count, M5 membership, and holdout.
-  This file recomputes the published thousandths from those literals. It does
-  not rerun the orbit enumeration, recompute a commutator, observe the ELF,
-  or promote `claimReady`.
+  This file recomputes the published thousandths from those literals.
+  `admittedRewardMilli` is 500 plus the novelty scalar, the same field the
+  oracle emits for an already-admitted kind=2 proposal. It does not rerun
+  the orbit enumeration, recompute a commutator, admit a proposal, observe
+  the ELF, or promote `claimReady`.
 -/
 import SounioPireusQuadraticOrbitCertificate
 
@@ -44,6 +46,10 @@ def frozenGradedMilli : Array Nat := #[
   200, 218, 218, 218, 430, 449, 440, 440, 440, 440, 430, 430, 440, 430, 449, 440,
   430, 440, 440, 440, 440, 430, 449, 440, 490, 490, 500, 500, 490, 500, 500, 490]
 
+def frozenAdmittedRewardMilli : Array Nat := #[
+  600, 500, 500, 650, 650, 949, 940, 940, 940, 940, 650, 500, 940, 650, 949, 940,
+  650, 940, 650, 940, 940, 650, 949, 500, 650, 650, 650, 650, 990, 1000, 1000, 990]
+
 def distanceOf (classId : Nat) : Option Nat :=
   match frozenCommutator[classId]?, frozenSquares[classId]? with
   | some commutator, some squares => some (absDiff commutator 210 + absDiff squares 15)
@@ -62,9 +68,15 @@ def noveltyMilli (classId : Nat) : Option Nat :=
       else (26000 + 300 * distance) / 130)
   | _, _, _ => none
 
+def admittedRewardMilli (classId : Nat) : Option Nat :=
+  match noveltyMilli classId with
+  | some novelty => some (500 + novelty)
+  | none => none
+
 def classScalar (classId : Nat) : Bool :=
   noveltyMilli classId == frozenNoveltyMilli[classId]?
     && gradedMilli classId == frozenGradedMilli[classId]?
+    && admittedRewardMilli classId == frozenAdmittedRewardMilli[classId]?
     && match frozenVisited[classId]?, frozenHoldout[classId]? with
       | some visited, some held => visited == 0 || held == 0
       | _, _ => false
@@ -81,6 +93,7 @@ def scalarCertificate : Bool :=
     && frozenHoldout.size == 32
     && frozenNoveltyMilli.size == 32
     && frozenGradedMilli.size == 32
+    && frozenAdmittedRewardMilli.size == 32
     && embeddedSourceClasses.size == 1024
     && classes
     && codes
@@ -90,6 +103,8 @@ theorem quadratic_novelty_scalar : scalarCertificate = true := by
 
 structure Boundary where
   scalarSourceBindingProved : Bool
+  admittedRewardBound : Bool
+  admissionDecided : Bool
   orbitRerun : Bool
   commutatorRecomputed : Bool
   executableBindingProved : Bool
@@ -98,6 +113,8 @@ deriving DecidableEq, Repr
 
 def boundary : Boundary :=
   { scalarSourceBindingProved := true
+  , admittedRewardBound := true
+  , admissionDecided := false
   , orbitRerun := false
   , commutatorRecomputed := false
   , executableBindingProved := false
@@ -105,6 +122,8 @@ def boundary : Boundary :=
 
 theorem quadratic_novelty_scalar_does_not_promote_a_claim :
     boundary.scalarSourceBindingProved = true
+      && boundary.admittedRewardBound = true
+      && boundary.admissionDecided = false
       && boundary.orbitRerun = false
       && boundary.commutatorRecomputed = false
       && boundary.executableBindingProved = false
