@@ -17,17 +17,27 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
 
+def load_or_compute_partition(cache_path, explorer, engine):
+    if cache_path.exists():
+        data = json.loads(cache_path.read_text())
+        return data["classes"], data["details"]
+    _, raw_min, _ = engine.run_full_census()
+    classes, _, details = engine.compute_orbit_classes(raw_min)
+    cache_path.write_text(json.dumps({"classes": classes, "details": details}))
+    return classes, details
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--oracle", type=Path, required=True)
     parser.add_argument("--inventory", type=Path, default=HERE / "atlas_m7/orbit_classes_inventory.json")
+    parser.add_argument("--partition-cache", type=Path, default=Path("/tmp/pireus_partition_cache.json"))
     args = parser.parse_args()
     spec = importlib.util.spec_from_file_location("explorer", ROOT / "tools/pireus_autonomous_explorer.py")
     explorer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(explorer)
     engine = explorer.PireusAutonomousExplorer(Path("/tmp/none"), ROOT)
-    _, raw_min, _ = engine.run_full_census()
-    classes, _, details = engine.compute_orbit_classes(raw_min)
+    classes, details = load_or_compute_partition(args.partition_cache, explorer, engine)
     inventory = json.loads(args.inventory.read_text())
     for row, members, detail in zip(inventory, classes, details):
         if (

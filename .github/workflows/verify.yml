@@ -15,6 +15,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Download verification ELFs
+        run: |
+          gh release download pireus-elfs-v1 --repo Sounio-lang/pireus --dir /tmp/pireus-elfs
+          chmod +x /tmp/pireus-elfs/*.elf
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Install elan
         run: |
           curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
@@ -33,7 +40,11 @@ jobs:
           restore-keys: |
             lean-${{ runner.os }}-
 
-      - name: Verify (Python + Lean)
+      - name: Verify (Python + ELFs + Lean)
         working-directory: continuity
         run: |
-          python3 verify_all.py --lean-dir ../formal/lean4
+          python3 verify_all.py \
+            --admission-bin /tmp/pireus-elfs/admission.elf \
+            --novelty-bin /tmp/pireus-elfs/novelty.elf \
+            --group-bin /tmp/pireus-elfs/group_variance.elf \
+            --lean-dir ../formal/lean4
