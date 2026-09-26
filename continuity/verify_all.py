@@ -72,7 +72,14 @@ def main():
               "oracle-1024-codes")
     results["oracle_1024"] = json.loads(out)
 
-    # 4. Group variance vectors (10 vectors)
+    # 4. Semantic binding (1024 codes, 9 fields)
+    out = run([sys.executable, str(HERE / "check_semantic_binding.py"),
+               "--oracle", str(args.novelty_bin),
+               "--source", str(HERE / "novelty_oracle.sio")],
+              "semantic-binding-1024-codes")
+    results["semantic_binding"] = json.loads(out)
+
+    # 5. Group variance vectors (10 vectors)
     out = run([sys.executable, str(HERE / "check_group_variance.py"),
                "--oracle", str(args.group_bin)],
               "group-variance-10-vectors")

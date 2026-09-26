@@ -244,20 +244,23 @@ theorem quadratic_orbit_certificate : certificate = true := by
 structure Boundary where
   certificateProved : Bool
   sourceTableBindingProved : Bool
-  executableBindingProved : Bool
+  semanticBindingProved : Bool
+  byteBindingProved : Bool
   claimReady : Bool
 deriving DecidableEq, Repr
 
 def boundary : Boundary :=
   { certificateProved := true
   , sourceTableBindingProved := true
-  , executableBindingProved := false
+  , semanticBindingProved := true
+  , byteBindingProved := false
   , claimReady := false }
 
 theorem quadratic_orbit_certificate_does_not_promote_a_claim :
     boundary.certificateProved = true
       && boundary.sourceTableBindingProved = true
-      && boundary.executableBindingProved = false
+      && boundary.semanticBindingProved = true
+      && boundary.byteBindingProved = false
       && boundary.claimReady = false := by
   decide
 
