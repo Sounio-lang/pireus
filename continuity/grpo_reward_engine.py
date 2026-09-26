@@ -105,6 +105,7 @@ def compute_proposal_reward(
 
     result["syntax_reward"] = 0.1
     result["reward"] += 0.1
+    result["reward_milli"] = 100
 
     # Run native Sounio admission engine
     try:
@@ -142,6 +143,7 @@ def compute_proposal_reward(
     result["admitted"] = True
     result["admission_reward"] = 0.4
     result["reward"] += 0.4
+    result["reward_milli"] = 500
     result["plan_id"] = receipt.get("plan_id")
     result["tensor_sha256"] = receipt.get("tensor_sha256")
 
@@ -150,6 +152,7 @@ def compute_proposal_reward(
         result["novelty_reward"] = 0.3
         result["novelty_source"] = "unclassified_lowering"
         result["reward"] += 0.3
+        result["reward_milli"] = 800
         return result
 
     if novelty_bin is None:
@@ -165,6 +168,7 @@ def compute_proposal_reward(
     graded = novelty_from_classification(classification)
     result.update(graded)
     result["novelty_milli"] = int(classification["novelty_milli"])
+    result["reward_milli"] = 500 + result["novelty_milli"]
     result["novelty_reward"] = graded["novelty_reward"]
     result["reward"] += graded["novelty_reward"]
     result["class_id"] = classification.get("class_id")
@@ -197,25 +201,11 @@ def group_statistics(group_bin: Path, reward_millis: list[int]) -> dict:
     return stats
 
 
-def evaluate_group_relative_advantages(group_results: list, epsilon: float = 1e-8) -> list:
-    """
-    Computes GRPO relative advantages A_i across the group of sampled conclusions.
-    A_i = (R_i - mean(R)) / (std(R) + epsilon)
-    """
-    rewards = [r["reward"] for r in group_results]
-    mean_r = sum(rewards) / len(rewards) if rewards else 0.0
-    var_r = sum((r - mean_r) ** 2 for r in rewards) / len(rewards) if len(rewards) > 1 else 0.0
-    std_r = var_r ** 0.5
-
-    for r in group_results:
-        r["advantage"] = (r["reward"] - mean_r) / (std_r + epsilon) if std_r > 0 else 0.0
-
-    return group_results
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--admission-bin", type=Path, required=True, help="Compiled Sounio admission engine ELF")
     parser.add_argument("--novelty-bin", type=Path, help="Compiled Sounio novelty oracle ELF")
+    parser.add_argument("--group-bin", type=Path, required=True, help="Compiled Sounio group variance ELF")
     parser.add_argument("--context", type=Path, required=True, help="Research context JSON")
     parser.add_argument("--proposals-dir", type=Path, required=True, help="Directory containing .proposal.json files")
     parser.add_argument("--output", type=Path, help="Output JSON results")
@@ -231,22 +221,29 @@ def main():
         res = compute_proposal_reward(args.admission_bin, args.context, p, args.novelty_bin)
         results.append(res)
 
-    results = evaluate_group_relative_advantages(results)
-
-    rewards = [r["reward"] for r in results]
-    mean_r = sum(rewards) / len(rewards) if rewards else 0.0
-    variance = sum((r - mean_r) ** 2 for r in rewards) / len(rewards) if len(rewards) > 1 else 0.0
-    holdout_rows = [r for r in results if r.get("split") == "holdout"]
+    try:
+        millis = [int(row["reward_milli"]) for row in results]
+    except KeyError:
+        print("missing reward_milli", file=sys.stderr)
+        sys.exit(1)
+    stats = group_statistics(args.group_bin, millis)
+    for row, deviation in zip(results, stats["centered_deviation"]):
+        row["centered_deviation"] = deviation
+    holdout_rows = [row for row in results if row.get("split") == "holdout"]
     output_payload = {
-        "schema": "pireus-grpo-reward-batch-v2",
+        "schema": "pireus-grpo-reward-batch-v5",
         "holdout_classes": list(HOLDOUT_CLASSES),
         "holdout_count": len(holdout_rows),
-        "advantage_degenerate": variance == 0.0,
+        "advantage_numerator": "centered_deviation",
+        "std_division": False,
+        "advantage_degenerate": bool(stats["degenerate"]),
+        "reward_sum": int(stats["reward_sum"]),
+        "centered_sum_squares": int(stats["centered_sum_squares"]),
+        "variance_denominator": int(stats["variance_denominator"]),
         "evaluator": "Sounio-Native-Admission-Engine",
         "context_file": str(args.context),
         "total_proposals": len(results),
-        "admitted_count": sum(1 for r in results if r["admitted"]),
-        "mean_reward": sum(r["reward"] for r in results) / len(results) if results else 0.0,
+        "admitted_count": sum(1 for row in results if row["admitted"]),
         "evaluations": results,
     }
 

@@ -46,7 +46,7 @@ class NoveltyMapTest(unittest.TestCase):
         self.assertEqual(graded["split"], "holdout")
 
     def test_mixed_batch_advantage_is_not_degenerate(self):
-        rows = []
+        rewards = []
         for item in (
             receipt(0, 1, 0, 0, 100, 200),
             receipt(130, 1, 0, 26, 150, 500),
@@ -55,10 +55,12 @@ class NoveltyMapTest(unittest.TestCase):
             receipt(120, 0, 1, 1, 0, 476),
         ):
             graded = engine.novelty_from_classification(item)
-            rows.append({"reward": 0.5 + graded["novelty_reward"], "split": graded["split"]})
-        engine.evaluate_group_relative_advantages(rows)
-        self.assertGreater(len({round(row["advantage"], 6) for row in rows}), 1)
-        self.assertTrue(any(row["advantage"] != 0.0 for row in rows))
+            rewards.append(500 + int(item["novelty_milli"] if graded["split"] == "train" else 0))
+        count = len(rewards)
+        total = sum(rewards)
+        deviations = [count * reward - total for reward in rewards]
+        self.assertGreater(len(set(deviations)), 1)
+        self.assertTrue(any(deviation != 0 for deviation in deviations))
 
     def test_published_eight_have_nonzero_integer_moment(self):
         rewards = (600, 650, 949, 1000, 500, 500, 500, 500)
