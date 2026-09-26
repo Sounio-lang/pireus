@@ -137,6 +137,9 @@ def compute_proposal_reward(
     result["decision"] = decision
     if decision != "ADMIT":
         result["reason"] = receipt.get("reason", "REFUSED")
+        if receipt.get("reward_milli") is not None:
+            result["reward_milli"] = int(receipt["reward_milli"])
+            result["reward"] = result["reward_milli"] / 1000.0
         return result
 
     # Admitted

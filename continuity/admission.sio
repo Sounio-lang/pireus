@@ -181,6 +181,14 @@ fn refuse(reason: string) -> i32 with IO {
     print(reason); print("\"}\n")
     1
 }
+
+fn refuse_scored(reason: string) -> i32 with IO {
+    // The proposal was parsed and then refused. Syntax is 100 thousandths.
+    // A parse failure does not reach this function and carries no reward.
+    print("{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"REFUSE\",\"reason\":\"")
+    print(reason); print("\",\"reward_milli\":100,\"claim_ready\":false}\n")
+    1
+}
 fn main() -> i32 with IO, Mut, Panic, Div {
     if arg_count() != 2 && arg_count() != 3 { return refuse("ARGUMENTS") }
     var materialize = false
@@ -203,35 +211,35 @@ fn main() -> i32 with IO, Mut, Panic, Div {
     // 65087 = fields 0..5 and 9..15 (kind=1). 130623 adds field 16 (kind=2).
     // Fields 6,7,8 stay context-only under both masks.
     if !p.valid { return refuse("PROPOSAL_FORMAT") }
-    if p.seen != 65087 && p.seen != 130623 { return refuse("PROPOSAL_FORMAT") }
-    if !hash_matches(hash_text(cs, cn), &p) { return refuse("SNAPSHOT") }
-    if c.values[0] != 1 || p.values[0] != 1 { return refuse("SCHEMA") }
-    if c.values[1] != 701202 || p.values[1] != c.values[1] { return refuse("TARGET") }
-    if c.values[2] != 16 || p.values[2] != 16 { return refuse("DIMENSION") }
-    if c.values[3] != 64 || p.values[3] != 64 { return refuse("PRECISION") }
+    if p.seen != 65087 && p.seen != 130623 { return refuse_scored("PROPOSAL_FORMAT") }
+    if !hash_matches(hash_text(cs, cn), &p) { return refuse_scored("SNAPSHOT") }
+    if c.values[0] != 1 || p.values[0] != 1 { return refuse_scored("SCHEMA") }
+    if c.values[1] != 701202 || p.values[1] != c.values[1] { return refuse_scored("TARGET") }
+    if c.values[2] != 16 || p.values[2] != 16 { return refuse_scored("DIMENSION") }
+    if c.values[3] != 64 || p.values[3] != 64 { return refuse_scored("PRECISION") }
     // order=1 means output k, ascending right operand j, left i=k XOR j.
-    if c.values[4] != 1 || p.values[4] != 1 { return refuse("ORDER") }
-    if c.values[5] != 0 || p.values[5] != 0 { return refuse("FMA") }
-    if c.values[8] != 1 { return refuse("UNKNOWN_OR_CONTRADICTORY_FACTS") }
-    if c.values[6] < 0 || c.values[6] > 63 || c.values[7] != 32 { return refuse("CAPABILITY") }
+    if c.values[4] != 1 || p.values[4] != 1 { return refuse_scored("ORDER") }
+    if c.values[5] != 0 || p.values[5] != 0 { return refuse_scored("FMA") }
+    if c.values[8] != 1 { return refuse_scored("UNKNOWN_OR_CONTRADICTORY_FACTS") }
+    if c.values[6] < 0 || c.values[6] > 63 || c.values[7] != 32 { return refuse_scored("CAPABILITY") }
     let kind = p.values[9]
-    if kind != 1 && kind != 2 { return refuse("KIND") }
+    if kind != 1 && kind != 2 { return refuse_scored("KIND") }
     // The phase key is present exactly when kind is 2, and never otherwise.
-    if kind == 1 && p.seen != 65087 { return refuse("KIND_MASK") }
-    if kind == 2 && p.seen != 130623 { return refuse("KIND_MASK") }
+    if kind == 1 && p.seen != 65087 { return refuse_scored("KIND_MASK") }
+    if kind == 2 && p.seen != 130623 { return refuse_scored("KIND_MASK") }
     let phase = p.values[16]
-    if kind == 2 && (phase < 0 || phase > 65535) { return refuse("PHASE_RANGE") }
+    if kind == 2 && (phase < 0 || phase > 65535) { return refuse_scored("PHASE_RANGE") }
     let stride = p.values[10]
     let offset = p.values[11]
     let load = p.values[12]
     let layout = p.values[13]
     let unroll = p.values[14]
-    if stride < 1 || stride > 15 || stride % 2 != 1 || offset > 15 { return refuse("LANE_MAP") }
-    if load > 1 || layout > 1 { return refuse("GRAMMAR") }
-    if unroll != 1 && unroll != 2 && unroll != 4 && unroll != 8 && unroll != 16 { return refuse("UNROLL") }
+    if stride < 1 || stride > 15 || stride % 2 != 1 || offset > 15 { return refuse_scored("LANE_MAP") }
+    if load > 1 || layout > 1 { return refuse_scored("GRAMMAR") }
+    if unroll != 1 && unroll != 2 && unroll != 4 && unroll != 8 && unroll != 16 { return refuse_scored("UNROLL") }
     var required: i64 = 39
     if load == 1 { required = required | 16 }
-    if (c.values[6] & required) != required { return refuse("CAPABILITY") }
+    if (c.values[6] & required) != required { return refuse_scored("CAPABILITY") }
     var lanes: [i64; 16] = [0; 16]
     var lane: i64 = 0
     while lane < 16 {
@@ -241,7 +249,7 @@ fn main() -> i32 with IO, Mut, Panic, Div {
     }
     var i: i64 = 0
     while i < 16 {
-        if lanes[i as usize] != 1 { return refuse("LANE_COVERAGE") }
+        if lanes[i as usize] != 1 { return refuse_scored("LANE_COVERAGE") }
         i = i + 1
     }
     // Reconstruct every coefficient in labeled basis order (a,b,k).
@@ -281,7 +289,7 @@ fn main() -> i32 with IO, Mut, Panic, Div {
         state = sha256_update(state, block, 256)
         a = a + 1
     }
-    if failures != 0 { return refuse("TENSOR") }
+    if failures != 0 { return refuse_scored("TENSOR") }
     if materialize {
         // emit_lowering_ptx modulates the signs with the phase twist.
         // For kind=1 twist is 0 (pure Cayley-Dickson); for kind=2 twist is the operator phase.

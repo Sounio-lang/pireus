@@ -20,6 +20,10 @@ def main():
    except Exception:raise AssertionError((label,run.returncode,run.stdout,run.stderr))
    if reason:
     assert run.returncode==1 and receipt["decision"]=="REFUSE" and receipt["reason"]==reason,(label,receipt)
+    if reason in {"CONTEXT_FORMAT","PROPOSAL_FORMAT","ARGUMENTS","MODE","SIZE"}:
+     assert "reward_milli" not in receipt,receipt
+    else:
+     assert receipt["reward_milli"]==100 and receipt["claim_ready"] is False,receipt
    else:
     assert run.returncode==0 and receipt["decision"]=="ADMIT",(label,receipt)
     assert receipt["proposal_sha256"]==hashlib.sha256(pb).hexdigest(),receipt
@@ -29,6 +33,8 @@ def main():
    return receipt
   first=check("positive")
   assert first["kind"]=="lowering" and first["reward_milli"]==800, first
+  refused=check("bad-target","TARGET",dict(target=999))
+  assert refused["reward_milli"]==100 and refused["claim_ready"] is False, refused
   second=check("permuted-layout-schedule",changes=dict(lane_stride=15,lane_offset=13,load=0,layout=1,unroll=16))
   assert first["plan_id"]!=second["plan_id"] and first["tensor_sha256"]==second["tensor_sha256"]
   for label,reason,changes in [
