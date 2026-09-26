@@ -1,0 +1,6 @@
+import SounioPireusQuadraticPipeline
+
+open SounioPireusQuadraticPipeline
+
+#print axioms quadratic_pipeline_certificate
+#print axioms quadratic_pipeline_does_not_promote_a_claim
