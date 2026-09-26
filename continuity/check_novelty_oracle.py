@@ -6,7 +6,6 @@ regression check against a committed inventory, not a separate existence proof.
 """
 import argparse
 import hashlib
-import importlib.util
 import json
 import subprocess
 import time
@@ -17,27 +16,32 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
 
-def load_or_compute_partition(cache_path, explorer, engine):
-    if cache_path.exists():
-        data = json.loads(cache_path.read_text())
-        return data["classes"], data["details"]
-    _, raw_min, _ = engine.run_full_census()
-    classes, _, details = engine.compute_orbit_classes(raw_min)
-    cache_path.write_text(json.dumps({"classes": classes, "details": details}))
-    return classes, details
+def q_code_from_phase(phase):
+    d0 = (phase >> 0) & 1
+    d1 = (phase >> 5) & 1
+    d2 = (phase >> 10) & 1
+    d3 = (phase >> 15) & 1
+    a01 = ((phase >> 1) & 1) ^ ((phase >> 4) & 1)
+    a02 = ((phase >> 2) & 1) ^ ((phase >> 8) & 1)
+    a03 = ((phase >> 3) & 1) ^ ((phase >> 12) & 1)
+    a12 = ((phase >> 6) & 1) ^ ((phase >> 9) & 1)
+    a13 = ((phase >> 7) & 1) ^ ((phase >> 13) & 1)
+    a23 = ((phase >> 11) & 1) ^ ((phase >> 14) & 1)
+    return d0 + d1 * 2 + d2 * 4 + d3 * 8 + a01 * 16 + a02 * 32 + a03 * 64 + a12 * 128 + a13 * 256 + a23 * 512
+
+
+def load_partition(path):
+    data = json.loads(path.read_text())
+    return data["classes"], data["details"]
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--oracle", type=Path, required=True)
     parser.add_argument("--inventory", type=Path, default=HERE / "atlas_m7/orbit_classes_inventory.json")
-    parser.add_argument("--partition-cache", type=Path, default=Path("/tmp/pireus_partition_cache.json"))
+    parser.add_argument("--partition", type=Path, default=HERE / "orbit_partition.json")
     args = parser.parse_args()
-    spec = importlib.util.spec_from_file_location("explorer", ROOT / "tools/pireus_autonomous_explorer.py")
-    explorer = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(explorer)
-    engine = explorer.PireusAutonomousExplorer(Path("/tmp/none"), ROOT)
-    classes, details = load_or_compute_partition(args.partition_cache, explorer, engine)
+    classes, details = load_partition(args.partition)
     inventory = json.loads(args.inventory.read_text())
     for row, members, detail in zip(inventory, classes, details):
         if (
@@ -61,7 +65,7 @@ def main():
     for phase in range(65536):
         proc = subprocess.run([str(args.oracle), str(phase)], capture_output=True, text=True, check=True)
         got = json.loads(proc.stdout)
-        code = explorer.q_code_from_phase(phase)
+        code = q_code_from_phase(phase)
         class_id = expected[code]
         counts[class_id] += 1
         distance = abs(details[class_id]["commutator_defects"] - 210) + abs(details[class_id]["square_negative_count"] - 15)
