@@ -1,0 +1,26 @@
+schema=pireus-semantic-binding-behavioral-v1
+status=PASS
+stage=SEMANTIC_BINDING
+claim_ready=false
+completed_utc=2026-09-26T14:17:35Z
+
+binding=semantic
+byte_binding=false
+codes_checked=1024
+fields_checked=9
+mismatches=0
+elapsed_seconds=0.424
+
+fields=class_id,train_visited,holdout,commutator_defect,square_negative_count,corpus_distance,novelty_milli,graded_milli,admitted_reward_milli
+lean_spec=SounioPireusQuadraticNoveltyScalar
+lean_spec_description=frozen_tables_plus_formulas
+
+oracle_elf_sha256=63007d26532facb04ba93b8e956c616eb0b0256f4d908ba2197f068884c3e1d4
+oracle_source_sha256=2b4afedc318deaa26b5f93215610863a1e40882e8169682bc4aa3800d7141700
+checker=continuity/check_semantic_binding.py
+checker_sha256=f85109c843087738b61813ab709384dd25f0ad9ed4dbbd6d05c664be3f6a1fb4
+compiler=committed prebuilt bin/madaros-linux-x86_64
+compiler_sha256=31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80
+compiler_from_source=false
+gpu_execution=false
+host=Linux 7.0.2-5-pve x86_64
