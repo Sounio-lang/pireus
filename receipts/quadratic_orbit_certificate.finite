@@ -1,0 +1,20 @@
+schema=pireus-quadratic-orbit-certificate-v1
+status=PASS
+stage=FINITE_COMPUTATIONAL_PARITY_ONLY
+claim_ready=false
+sounio_oracle_binding_proved=false
+kernel_axiom_free=false
+
+theorem=SounioPireusQuadraticOrbitCertificate.quadratic_orbit_certificate
+ordered_bases=20160
+distinct_ordered_bases=20160
+admitted_actions=336
+orbit_classes=32
+class_sizes_match_m7_inventory=true
+quadratic_codes_covered=1024
+native_decide=true
+axiom_audit=propext, Quot.sound, quadratic_orbit_certificate._native.native_decide.ax_1_1
+claim_boundary_axioms=none
+build_target=lake build SounioPireusQuadraticOrbitCertificate SounioPireusQuadraticOrbitCertificateAxiomAudit
+build_elapsed_seconds=237
+toolchain=leanprover/lean4:v4.33.0

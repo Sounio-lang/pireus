@@ -1,0 +1,6 @@
+import SounioPireusQuadraticOrbitCertificate
+
+open SounioPireusQuadraticOrbitCertificate
+
+#print axioms quadratic_orbit_certificate
+#print axioms quadratic_orbit_certificate_does_not_promote_a_claim

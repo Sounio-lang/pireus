@@ -294,6 +294,12 @@ lean_lib «SounioPireusOperatorOrbitClassReconstructionAxiomAudit» where
 lean_lib «SounioPireusQuotientNoveltyForge» where
 
 @[default_target]
+lean_lib «SounioPireusQuadraticOrbitCertificate» where
+
+@[default_target]
+lean_lib «SounioPireusQuadraticOrbitCertificateAxiomAudit» where
+
+@[default_target]
 lean_lib «SounioPireusSignTableBitVecLex» where
 
 @[default_target]
