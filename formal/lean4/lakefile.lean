@@ -336,6 +336,12 @@ lean_lib «SounioPireusAdmissionReward» where
 lean_lib «SounioPireusAdmissionRewardAxiomAudit» where
 
 @[default_target]
+lean_lib «SounioPireusRewardDisplay» where
+
+@[default_target]
+lean_lib «SounioPireusRewardDisplayAxiomAudit» where
+
+@[default_target]
 lean_lib «SounioPireusSignTableBitVecLex» where
 
 @[default_target]

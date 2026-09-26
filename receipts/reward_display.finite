@@ -1,0 +1,24 @@
+schema=pireus-reward-display-v1
+status=PASS
+stage=FINITE_COMPUTATIONAL_PARITY_ONLY
+claim_ready=false
+completed_utc=2026-09-26T12:47:47Z
+
+theorem=SounioPireusRewardDisplay.reward_display_certificate
+display_denominator=1000
+std_division=false
+advantage_numerator=centered_deviation
+
+source=continuity/grpo_reward_engine.py
+certificate_sha256=8aa5652515fd6ba22bfe30b4dafcefad5e72ca67f5ab5a1eadf60e19a5f62c89
+orbit_enumeration=false
+admission_decided=false
+executable_binding_proved=false
+kernel_axiom_free=false
+
+axiom_audit=reward_display_certificate._native.native_decide.ax_1_1, advantage_policy_certificate._native.native_decide.ax_1_1
+claim_boundary_axioms=none
+build_target=lake build SounioPireusRewardDisplay SounioPireusRewardDisplayAxiomAudit
+build_elapsed_seconds=8
+certificate_build_seconds=0.508
+toolchain=leanprover/lean4:v4.33.0

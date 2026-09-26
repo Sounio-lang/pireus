@@ -1,0 +1,7 @@
+import SounioPireusRewardDisplay
+
+open SounioPireusRewardDisplay
+
+#print axioms reward_display_certificate
+#print axioms advantage_policy_certificate
+#print axioms reward_display_does_not_promote_a_claim
