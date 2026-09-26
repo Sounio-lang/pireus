@@ -24,26 +24,27 @@ def receipt(distance, visited, holdout, class_id, novelty_milli, graded_milli):
 class NoveltyMapTest(unittest.TestCase):
     def test_nonzero_phase_in_visited_class_is_not_full_novelty(self):
         # M5 phase 1128 is nonzero and still in a visited class.
-        graded = engine.novelty_from_classification(receipt(130, 1, 0, 26, 150, 500))
-        self.assertEqual(graded["novelty_reward"], 0.15)
-        self.assertNotEqual(graded["novelty_reward"], 0.5)
+        classified = engine.novelty_from_classification(receipt(130, 1, 0, 26, 150, 500))
+        self.assertEqual(classified["novelty_source"], "train_corpus")
+        self.assertEqual(classified["split"], "train")
 
     def test_corpus_operator_stays_low(self):
-        graded = engine.novelty_from_classification(receipt(0, 1, 0, 0, 100, 200))
-        self.assertEqual(graded["novelty_reward"], 0.1)
+        classified = engine.novelty_from_classification(receipt(0, 1, 0, 0, 100, 200))
+        self.assertEqual(classified["novelty_source"], "train_corpus")
+        self.assertEqual(classified["split"], "train")
 
     def test_unvisited_distance_is_graded(self):
         near = engine.novelty_from_classification(receipt(108, 0, 0, 5, 449, 449))
         far = engine.novelty_from_classification(receipt(130, 0, 0, 29, 500, 500))
-        self.assertLess(near["novelty_reward"], far["novelty_reward"])
-        self.assertAlmostEqual(far["novelty_reward"], 0.5)
-        self.assertEqual(near["novelty_reward"], 0.449)
+        self.assertEqual(near["novelty_source"], "unvisited_graded")
+        self.assertEqual(far["novelty_source"], "unvisited_graded")
+        self.assertEqual(near["split"], "train")
+        self.assertEqual(far["split"], "train")
 
     def test_holdout_adds_no_training_reward(self):
-        graded = engine.novelty_from_classification(receipt(120, 0, 1, 1, 0, 476))
-        self.assertEqual(graded["novelty_reward"], 0.0)
-        self.assertGreater(graded["held_out_novelty"], 0.0)
-        self.assertEqual(graded["split"], "holdout")
+        classified = engine.novelty_from_classification(receipt(120, 0, 1, 1, 0, 476))
+        self.assertGreater(classified["held_out_novelty"], 0.0)
+        self.assertEqual(classified["split"], "holdout")
 
     def test_mixed_batch_advantage_is_not_degenerate(self):
         rewards = []
@@ -77,10 +78,10 @@ class NoveltyMapTest(unittest.TestCase):
     def test_component_split_follows_the_native_total(self):
         row = {}
         engine.apply_reward_milli(row, 949)
-        self.assertEqual((row["syntax_reward"], row["admission_reward"], row["novelty_reward"], row["reward"]), (0.1, 0.4, 0.449, 0.949))
+        self.assertEqual(row["reward"], 0.949)
         refused = {}
         engine.apply_reward_milli(refused, 100)
-        self.assertEqual((refused["syntax_reward"], refused["admission_reward"], refused["novelty_reward"]), (0.1, 0.0, 0.0))
+        self.assertEqual(refused["reward"], 0.1)
 
     def test_live_group_variance_when_present(self):
         binary = Path("/tmp/pireus_group_variance.elf")

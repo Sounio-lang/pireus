@@ -39,9 +39,9 @@ def milli_to_reward(milli: int) -> float:
 
 
 def novelty_from_classification(receipt: dict) -> dict:
-    """Read the scalar the native oracle already chose. Holdout gets no reward."""
+    """Read the split decision from the native oracle. Nothing here chooses a reward."""
     if receipt.get("decision") != "CLASSIFIED":
-        return {"novelty_reward": 0.0, "novelty_source": "oracle_refused", "split": None}
+        return {"novelty_source": "oracle_refused", "split": None}
     distance = int(receipt["corpus_distance"])
     if distance < 0 or distance > CORPUS_DISTANCE_DENOMINATOR:
         raise ValueError(f"CORPUS_DISTANCE_OUT_OF_RANGE:{distance}")
@@ -51,14 +51,13 @@ def novelty_from_classification(receipt: dict) -> dict:
         if novelty != 0.0:
             raise ValueError("HOLDOUT_TRAINING_REWARD")
         return {
-            "novelty_reward": 0.0,
             "held_out_novelty": graded,
             "novelty_source": "holdout_excluded",
             "split": "holdout",
         }
     if int(receipt["train_visited"]) == 1:
-        return {"novelty_reward": novelty, "novelty_source": "train_corpus", "split": "train"}
-    return {"novelty_reward": novelty, "novelty_source": "unvisited_graded", "split": "train"}
+        return {"novelty_source": "train_corpus", "split": "train"}
+    return {"novelty_source": "unvisited_graded", "split": "train"}
 
 def apply_reward_milli(result: dict, reward_milli: int) -> None:
     """Split one native total. Nothing here chooses the total."""
@@ -66,9 +65,6 @@ def apply_reward_milli(result: dict, reward_milli: int) -> None:
         raise ValueError(f"REWARD_MILLI_OUT_OF_RANGE:{reward_milli}")
     result["reward_milli"] = reward_milli
     result["reward"] = reward_milli / 1000.0
-    result["syntax_reward"] = min(reward_milli, 100) / 1000.0
-    result["admission_reward"] = min(max(reward_milli - 100, 0), 400) / 1000.0
-    result["novelty_reward"] = max(reward_milli - 500, 0) / 1000.0
 
 
 def compute_proposal_reward(
@@ -88,9 +84,6 @@ def compute_proposal_reward(
     result = {
         "proposal": str(proposal_path),
         "reward": 0.0,
-        "syntax_reward": 0.0,
-        "admission_reward": 0.0,
-        "novelty_reward": 0.0,
         "admitted": False,
         "decision": "REFUSE",
         "reason": None,
@@ -158,8 +151,8 @@ def compute_proposal_reward(
         if receipt.get("reward_milli") is None:
             result["reason"] = "LOWERING_REWARD_MISSING"
             return result
-        result["novelty_source"] = "unclassified_lowering"
         apply_reward_milli(result, int(receipt["reward_milli"]))
+        result["novelty_source"] = "unclassified_lowering"
         return result
 
     if novelty_bin is None:
@@ -174,12 +167,8 @@ def compute_proposal_reward(
         return result
     graded = novelty_from_classification(classification)
     result.update(graded)
-    result["novelty_milli"] = int(classification["novelty_milli"])
-    result["admitted_reward_milli"] = int(classification["admitted_reward_milli"])
-    apply_reward_milli(result, result["admitted_reward_milli"])
-    result["class_id"] = classification.get("class_id")
-    result["corpus_distance"] = classification.get("corpus_distance")
-    result["train_visited"] = classification.get("train_visited")
+    apply_reward_milli(result, int(classification["admitted_reward_milli"]))
+    result.update({k: v for k, v in classification.items() if k not in {"schema", "authority", "oracle", "decision", "phase", "quadratic_code", "holdout", "commutator_defect", "square_negative_count", "graded_milli", "admitted_reward_milli", "claim_ready"}})
     return result
 
 def group_statistics(group_bin: Path, reward_millis: list[int]) -> dict:

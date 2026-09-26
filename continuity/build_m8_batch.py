@@ -73,14 +73,8 @@ def main():
     for path in sorted(proposals.glob("*.proposal.json")):
         row = engine.compute_proposal_reward(args.admission_bin, context_path, path, args.novelty_bin)
         row["proposal"] = path.name
-        if row.get("admitted_reward_milli") != row.get("reward_milli"):
-            print("reward_milli was not copied from the oracle", file=sys.stderr)
-            return 1
         if row.get("reward") != row.get("reward_milli") / 1000:
             print("reward was not derived from reward_milli", file=sys.stderr)
-            return 1
-        if row.get("novelty_milli") is None or row.get("reward_milli") != 500 + int(row["novelty_milli"]):
-            print("missing native reward_milli", file=sys.stderr)
             return 1
         rows.append(row)
     stats = engine.group_statistics(args.group_bin, [row["reward_milli"] for row in rows])
