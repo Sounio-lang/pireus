@@ -72,6 +72,7 @@ def main():
             or got["corpus_distance"] != distance
             or got["novelty_milli"] != novelty_milli
             or got["graded_milli"] != graded_milli
+            or got["admitted_reward_milli"] != 500 + novelty_milli
             or got["claim_ready"] is not False
         ):
             raise SystemExit(f"mismatch at phase {phase}: {got}")

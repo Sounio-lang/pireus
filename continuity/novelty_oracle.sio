@@ -139,6 +139,12 @@ fn graded_milli(class_id: i64) -> i64 with Mut, Div {
     (26000 + 300 * distance(class_id)) / 130
 }
 
+fn admitted_reward_milli(class_id: i64) -> i64 with Mut, Div {
+    // Thousandths for one already-admitted kind=2 proposal: syntax 100,
+    // admission 400, plus the novelty scalar. This is not an admission decision.
+    500 + novelty_milli(class_id)
+}
+
 fn parse_phase(text: string) -> i64 with Mut {
     let n = str_len(text)
     if n <= 0 || n > 5 { return -1 }
@@ -192,6 +198,8 @@ fn main() -> i32 with IO, Mut, Panic, Div {
     print_int(novelty_milli(class_id))
     print(",\"graded_milli\":")
     print_int(graded_milli(class_id))
+    print(",\"admitted_reward_milli\":")
+    print_int(admitted_reward_milli(class_id))
     print(",\"claim_ready\":false}\n")
     0
 }

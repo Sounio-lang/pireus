@@ -89,10 +89,10 @@ class NoveltyMapTest(unittest.TestCase):
         if not binary.is_file():
             self.skipTest("native oracle is built on the Sounio workspace")
         expected = {
-            "0": {"class_id": 0, "train_visited": 1, "holdout": 0, "corpus_distance": 0, "novelty_milli": 100},
-            "1128": {"class_id": 26, "train_visited": 1, "holdout": 0, "corpus_distance": 130, "novelty_milli": 150},
-            "32841": {"class_id": 29, "train_visited": 0, "holdout": 0, "corpus_distance": 130, "novelty_milli": 500},
-            "1": {"class_id": 1, "train_visited": 0, "holdout": 1, "corpus_distance": 8, "novelty_milli": 0, "graded_milli": 218},
+            "0": {"class_id": 0, "train_visited": 1, "holdout": 0, "corpus_distance": 0, "novelty_milli": 100, "admitted_reward_milli": 600},
+            "1128": {"class_id": 26, "train_visited": 1, "holdout": 0, "corpus_distance": 130, "novelty_milli": 150, "admitted_reward_milli": 650},
+            "32841": {"class_id": 29, "train_visited": 0, "holdout": 0, "corpus_distance": 130, "novelty_milli": 500, "admitted_reward_milli": 1000},
+            "1": {"class_id": 1, "train_visited": 0, "holdout": 1, "corpus_distance": 8, "novelty_milli": 0, "graded_milli": 218, "admitted_reward_milli": 500},
             "32768": {"class_id": 2, "train_visited": 0, "holdout": 1, "novelty_milli": 0},
         }
         for phase, want in expected.items():

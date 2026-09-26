@@ -50,6 +50,7 @@ def main() -> int:
             or got["class_id"] != class_id
             or "novelty_milli" not in got
             or "graded_milli" not in got
+            or got.get("admitted_reward_milli") != 500 + got["novelty_milli"]
             or got["claim_ready"] is not False
         ):
             mismatches.append({"code": code, "phase": phase, "got": got, "expected_class": class_id})

@@ -168,7 +168,8 @@ def compute_proposal_reward(
     graded = novelty_from_classification(classification)
     result.update(graded)
     result["novelty_milli"] = int(classification["novelty_milli"])
-    result["reward_milli"] = 500 + result["novelty_milli"]
+    result["admitted_reward_milli"] = int(classification["admitted_reward_milli"])
+    result["reward_milli"] = result["admitted_reward_milli"]
     result["novelty_reward"] = graded["novelty_reward"]
     result["reward"] += graded["novelty_reward"]
     result["class_id"] = classification.get("class_id")
