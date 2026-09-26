@@ -1,0 +1,37 @@
+schema=pireus-m8-novelty-oracle-milli-exhaustive-v1
+status=PASS
+stage=ORACLE_SCALAR_CHECKED
+claim_ready=false
+completed_utc=2026-09-26T02:17:55Z
+supersedes_m8_novelty_oracle_exhaustive=false
+
+phases_checked=65536
+mismatches=0
+orbit_classes=32
+inventory_rows_matched=32
+fibres_are_64_matrices=true
+holdout_classes=1,2,11,23
+census_seconds=1.02
+stabilizer_seconds=85.95
+elf_elapsed_seconds=28.68
+
+oracle_source=continuity/novelty_oracle.sio
+oracle_source_sha256=9f7c2f5a6037fcacda5606a6e28cf259c9259a4c1fdd097c50f8cbf670aac938
+oracle_elf_sha256=0296f02319c1d8b97ed3ecfe041dd3f3af4bf52aea34890f60b18438d513c980
+checker=continuity/check_novelty_oracle.py
+checker_sha256=083c987a524dfd994a1dc2655fac0b3f8bb4c828b812a2977986cd9beeed8206
+compiler=committed prebuilt bin/madaros-linux-x86_64
+compiler_sha256=31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80
+compiler_from_source=false
+compiler_claim=false
+
+inventory=continuity/atlas_m7/orbit_classes_inventory.json
+comparison=fresh tools/pireus_autonomous_explorer.py partition against the native executable
+scalar=(26000 + 300 * distance) / 130, integer division
+visited_novelty_milli=100 when distance is 0, else 150
+holdout_novelty_milli=0
+byte_binding=false
+gpu_execution=false
+host=Linux 7.0.2-5-pve x86_64
+
+matched_oracle_fields=quadratic_code,class_id,train_visited,holdout,commutator_defect,square_negative_count,corpus_distance,novelty_milli,graded_milli,claim_ready
