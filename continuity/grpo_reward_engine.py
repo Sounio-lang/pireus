@@ -104,8 +104,6 @@ def compute_proposal_reward(
         return result
 
     result["syntax_reward"] = 0.1
-    result["reward_milli"] = 100
-    result["reward"] = result["reward_milli"] / 1000.0
 
     # Run native Sounio admission engine
     try:
@@ -145,8 +143,6 @@ def compute_proposal_reward(
     # Admitted
     result["admitted"] = True
     result["admission_reward"] = 0.4
-    result["reward_milli"] = 500
-    result["reward"] = result["reward_milli"] / 1000.0
     result["plan_id"] = receipt.get("plan_id")
     result["tensor_sha256"] = receipt.get("tensor_sha256")
 
@@ -229,8 +225,8 @@ def main():
         results.append(res)
 
     try:
-        millis = [int(row["reward_milli"]) for row in results]
-    except KeyError:
+        millis = [int(row["reward_milli"]) if "reward_milli" in row else 0 for row in results]
+    except (KeyError, TypeError, ValueError):
         print("missing reward_milli", file=sys.stderr)
         sys.exit(1)
     stats = group_statistics(args.group_bin, millis)

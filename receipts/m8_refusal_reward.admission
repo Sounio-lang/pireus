@@ -6,6 +6,9 @@ completed_utc=2026-09-26T10:40:17Z
 
 semantic_refusal_reward_milli=100
 parse_failure_reward=absent
+engine_copies_refusal_milli=true
+engine_unparsed_reward_milli=absent
+engine_check_utc=2026-09-26T10:47:22Z
 parse_reasons=ARGUMENTS,MODE,SIZE,CONTEXT_FORMAT,PROPOSAL_FORMAT
 admission_cases=38
 lowering_reward_milli=800
