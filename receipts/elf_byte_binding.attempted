@@ -1,0 +1,27 @@
+schema=pireus-elf-byte-binding-attempted-v1
+status=NOT_ACHIEVED
+stage=BYTE_STORAGE_BINDING
+claim_ready=false
+completed_utc=2026-09-26T13:20:00Z
+
+conclusion=table_not_stored_as_contiguous_literal
+reason=compiler_generates_runtime_initialization
+
+searched=code_segment,rodata_segment,rwdata_segment,elf_header
+encodings=i64_le,i32_le,u8,i64_le_contiguous,i32_le_contiguous,u8_contiguous
+first8_values=0,1,1,1,1,1,1,1
+found_at=none
+
+immediates_confirmed=0x6590=26000,0x12c=300,0x82=130
+immediates_meaning=novelty_milli_formula
+
+executable_binding_proved=false
+next_step=semantic_binding
+next_step_description=prove_the_binary_returns_the_same_values_as_lean_when_executed
+
+oracle_elf_sha256=63007d26532facb04ba93b8e956c616eb0b0256f4d908ba2197f068884c3e1d4
+oracle_source_sha256=2b4afedc318deaa26b5f93215610863a1e40882e8169682bc4aa3800d7141700
+compiler=committed prebuilt bin/madaros-linux-x86_64
+compiler_sha256=31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80
+gpu_execution=false
+host=Linux 7.0.2-5-pve x86_64
