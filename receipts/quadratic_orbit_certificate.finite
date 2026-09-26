@@ -2,7 +2,9 @@ schema=pireus-quadratic-orbit-certificate-v1
 status=PASS
 stage=FINITE_COMPUTATIONAL_PARITY_ONLY
 claim_ready=false
-sounio_oracle_binding_proved=false
+source_table_entries_matched=1024
+source_table=continuity/novelty_oracle.sio class_of
+executable_binding_proved=false
 kernel_axiom_free=false
 
 theorem=SounioPireusQuadraticOrbitCertificate.quadratic_orbit_certificate
@@ -16,5 +18,5 @@ native_decide=true
 axiom_audit=propext, Quot.sound, quadratic_orbit_certificate._native.native_decide.ax_1_1
 claim_boundary_axioms=none
 build_target=lake build SounioPireusQuadraticOrbitCertificate SounioPireusQuadraticOrbitCertificateAxiomAudit
-build_elapsed_seconds=237
+build_elapsed_seconds=267
 toolchain=leanprover/lean4:v4.33.0

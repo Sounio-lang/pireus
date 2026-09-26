@@ -4,8 +4,9 @@
   The sign is `SounioCDCocycle.cdSigma`. Ordered bases of F₂⁴ supply the 20160
   elements of GL(4,2). A basis-and-swap pair is admitted when the Cayley-Dickson
   delta lies in bilinear forms plus coboundaries. The theorem is one
-  `native_decide` of that finite action. It does not bind `novelty_oracle.sio`,
-  and `claimReady` stays false.
+  `native_decide` of that finite action. The same check compares all 1024 class
+  ids with the table copied from `continuity/novelty_oracle.sio`. That binds the
+  source literal, not the compiled ELF. `claimReady` stays false.
 -/
 import SounioCDCocycle
 
@@ -176,10 +177,49 @@ def frozenMinima : List Nat :=
    64, 65, 66, 72, 73, 74, 80, 82, 83, 84,
    88, 90, 91, 92, 192, 193, 198, 199, 200, 201, 206, 207]
 
+def embeddedSourceClasses : Array Nat := #[
+    0, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 6, 6, 6, 6, 7, 7, 7, 8, 9, 9, 9, 9,
+    4, 4, 6, 6, 4, 5, 6, 6, 7, 7, 9, 9, 7, 8, 9, 9, 4, 4, 6, 6, 6, 6, 4, 5, 7, 7, 9, 9, 9, 9, 7, 8,
+    10, 11, 12, 12, 12, 12, 12, 12, 13, 14, 15, 15, 15, 15, 15, 15, 16, 16, 17, 18, 19, 19, 19, 19, 20, 20, 21, 22, 23, 23, 23, 23,
+    16, 16, 19, 19, 17, 18, 19, 19, 20, 20, 23, 23, 21, 22, 23, 23, 16, 16, 19, 19, 19, 19, 17, 18, 20, 20, 23, 23, 23, 23, 21, 22,
+    4, 6, 4, 6, 4, 6, 5, 6, 7, 9, 7, 9, 7, 9, 8, 9, 4, 6, 4, 6, 6, 4, 6, 5, 7, 9, 7, 9, 9, 7, 9, 8,
+    4, 6, 6, 4, 4, 6, 6, 5, 7, 9, 9, 7, 7, 9, 9, 8, 6, 4, 4, 6, 4, 6, 6, 5, 9, 7, 7, 9, 7, 9, 9, 8,
+    24, 25, 24, 25, 24, 25, 26, 27, 28, 29, 28, 29, 28, 29, 30, 31, 24, 25, 24, 25, 25, 24, 27, 26, 28, 29, 28, 29, 29, 28, 31, 30,
+    24, 25, 25, 24, 24, 25, 27, 26, 28, 29, 29, 28, 28, 29, 31, 30, 25, 24, 24, 25, 24, 25, 27, 26, 29, 28, 28, 29, 28, 29, 31, 30,
+    10, 12, 11, 12, 12, 12, 12, 12, 13, 15, 14, 15, 15, 15, 15, 15, 16, 17, 16, 18, 19, 19, 19, 19, 20, 21, 20, 22, 23, 23, 23, 23,
+    24, 24, 25, 25, 24, 26, 25, 27, 28, 28, 29, 29, 28, 30, 29, 31, 24, 24, 25, 25, 25, 27, 24, 26, 28, 28, 29, 29, 29, 31, 28, 30,
+    10, 12, 12, 11, 12, 12, 12, 12, 13, 15, 15, 14, 15, 15, 15, 15, 17, 16, 16, 18, 19, 19, 19, 19, 21, 20, 20, 22, 23, 23, 23, 23,
+    24, 24, 25, 25, 24, 26, 27, 25, 28, 28, 29, 29, 28, 30, 31, 29, 24, 24, 25, 25, 27, 25, 24, 26, 28, 28, 29, 29, 31, 29, 28, 30,
+    16, 19, 16, 19, 17, 19, 18, 19, 20, 23, 20, 23, 21, 23, 22, 23, 16, 19, 16, 19, 19, 17, 19, 18, 20, 23, 20, 23, 23, 21, 23, 22,
+    24, 25, 25, 24, 24, 27, 25, 26, 28, 29, 29, 28, 28, 31, 29, 30, 25, 24, 24, 25, 24, 27, 25, 26, 29, 28, 28, 29, 28, 31, 29, 30,
+    24, 25, 24, 25, 24, 27, 26, 25, 28, 29, 28, 29, 28, 31, 30, 29, 24, 25, 24, 25, 27, 24, 25, 26, 28, 29, 28, 29, 31, 28, 29, 30,
+    16, 19, 19, 16, 17, 19, 19, 18, 20, 23, 23, 20, 21, 23, 23, 22, 19, 16, 16, 19, 17, 19, 19, 18, 23, 20, 20, 23, 21, 23, 23, 22,
+    10, 12, 12, 12, 11, 12, 12, 12, 13, 15, 15, 15, 14, 15, 15, 15, 24, 24, 24, 26, 25, 25, 25, 27, 28, 28, 28, 30, 29, 29, 29, 31,
+    16, 17, 19, 19, 16, 18, 19, 19, 20, 21, 23, 23, 20, 22, 23, 23, 24, 24, 25, 27, 25, 25, 24, 26, 28, 28, 29, 31, 29, 29, 28, 30,
+    10, 12, 12, 12, 12, 11, 12, 12, 13, 15, 15, 15, 15, 14, 15, 15, 24, 24, 24, 26, 25, 25, 27, 25, 28, 28, 28, 30, 29, 29, 31, 29,
+    17, 16, 19, 19, 16, 18, 19, 19, 21, 20, 23, 23, 20, 22, 23, 23, 24, 24, 27, 25, 25, 25, 24, 26, 28, 28, 31, 29, 29, 29, 28, 30,
+    16, 19, 17, 19, 16, 19, 18, 19, 20, 23, 21, 23, 20, 23, 22, 23, 24, 25, 24, 27, 25, 24, 25, 26, 28, 29, 28, 31, 29, 28, 29, 30,
+    16, 19, 19, 17, 16, 19, 19, 18, 20, 23, 23, 21, 20, 23, 23, 22, 25, 24, 24, 27, 24, 25, 25, 26, 29, 28, 28, 31, 28, 29, 29, 30,
+    24, 25, 24, 27, 24, 25, 26, 25, 28, 29, 28, 31, 28, 29, 30, 29, 16, 19, 17, 19, 19, 16, 19, 18, 20, 23, 21, 23, 23, 20, 23, 22,
+    24, 25, 27, 24, 24, 25, 25, 26, 28, 29, 31, 28, 28, 29, 29, 30, 19, 16, 17, 19, 16, 19, 19, 18, 23, 20, 21, 23, 20, 23, 23, 22,
+    10, 12, 12, 12, 12, 12, 11, 12, 13, 15, 15, 15, 15, 15, 14, 15, 24, 24, 24, 26, 25, 27, 25, 25, 28, 28, 28, 30, 29, 31, 29, 29,
+    24, 24, 25, 27, 24, 26, 25, 25, 28, 28, 29, 31, 28, 30, 29, 29, 16, 17, 19, 19, 19, 19, 16, 18, 20, 21, 23, 23, 23, 23, 20, 22,
+    10, 12, 12, 12, 12, 12, 12, 11, 13, 15, 15, 15, 15, 15, 15, 14, 24, 24, 24, 26, 27, 25, 25, 25, 28, 28, 28, 30, 31, 29, 29, 29,
+    24, 24, 27, 25, 24, 26, 25, 25, 28, 28, 31, 29, 28, 30, 29, 29, 17, 16, 19, 19, 19, 19, 16, 18, 21, 20, 23, 23, 23, 23, 20, 22,
+    17, 19, 16, 19, 16, 19, 18, 19, 21, 23, 20, 23, 20, 23, 22, 23, 24, 27, 24, 25, 25, 24, 25, 26, 28, 31, 28, 29, 29, 28, 29, 30,
+    24, 27, 25, 24, 24, 25, 25, 26, 28, 31, 29, 28, 28, 29, 29, 30, 19, 17, 16, 19, 16, 19, 19, 18, 23, 21, 20, 23, 20, 23, 23, 22,
+    24, 27, 24, 25, 24, 25, 26, 25, 28, 31, 28, 29, 28, 29, 30, 29, 17, 19, 16, 19, 19, 16, 19, 18, 21, 23, 20, 23, 23, 20, 23, 22,
+    17, 19, 19, 16, 16, 19, 19, 18, 21, 23, 23, 20, 20, 23, 23, 22, 27, 24, 24, 25, 24, 25, 25, 26, 31, 28, 28, 29, 28, 29, 29, 30,
+  ]
+
 def frozenSizes : List Nat :=
   [1, 7, 1, 7, 21, 7, 28, 21, 7, 28,
    7, 7, 42, 7, 7, 42, 42, 21, 21, 84,
    42, 21, 21, 84, 84, 84, 28, 28, 84, 84, 28, 28]
+
+def classIndex (minima : List Nat) (parent : Array Nat) (quadratic : Nat) : Nat :=
+  let root := rootIn parent quadratic
+  minima.findIdx fun minimum => rootIn parent minimum == root
 
 def certificate : Bool :=
   let codes := glCodes
@@ -187,30 +227,37 @@ def certificate : Bool :=
   let parent := orbitParentFrom admitted
   let minima := classMinima parent
   let sizes := classSizes parent minima
+  let bound := (List.range 1024).all fun code =>
+    embeddedSourceClasses[code]? == some (classIndex minima parent code)
   codes.length == 20160
     && codes.eraseDups.length == 20160
     && admitted.length == 336
     && minima == frozenMinima
     && sizes == frozenSizes
     && sizes.foldl (· + ·) 0 == 1024
+    && embeddedSourceClasses.size == 1024
+    && bound
 
 theorem quadratic_orbit_certificate : certificate = true := by
   native_decide
 
 structure Boundary where
   certificateProved : Bool
-  sounioOracleBindingProved : Bool
+  sourceTableBindingProved : Bool
+  executableBindingProved : Bool
   claimReady : Bool
 deriving DecidableEq, Repr
 
 def boundary : Boundary :=
   { certificateProved := true
-  , sounioOracleBindingProved := false
+  , sourceTableBindingProved := true
+  , executableBindingProved := false
   , claimReady := false }
 
 theorem quadratic_orbit_certificate_does_not_promote_a_claim :
     boundary.certificateProved = true
-      && boundary.sounioOracleBindingProved = false
+      && boundary.sourceTableBindingProved = true
+      && boundary.executableBindingProved = false
       && boundary.claimReady = false := by
   decide
 
