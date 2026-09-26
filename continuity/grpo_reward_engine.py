@@ -3,10 +3,9 @@
 Pireus M6/M8 GRPO reward engine.
 
 admission.sio decides well-formedness. novelty_oracle.sio decides the orbit
-class, whether that class belongs to the frozen M5 training corpus, whether
-it is in the fixed holdout, and its integer distance to the Cayley-Dickson
-class. Python applies only the published scalar map below. It does not infer
-a class from a nonzero phase.
+class, the training split, and the published novelty scalar in thousandths.
+Python converts those thousandths and computes the group mean and variance.
+It does not infer a class or a novelty scalar from a phase.
 """
 import argparse
 import hashlib
@@ -32,15 +31,24 @@ def classify_phase(novelty_bin: Path, phase: int) -> dict:
         raise RuntimeError(proc.stderr.strip() or "EMPTY_NOVELTY_OUTPUT")
     return json.loads(proc.stdout)
 
+def milli_to_reward(milli: int) -> float:
+    if milli < 0 or milli > 500:
+        raise ValueError(f"NOVELTY_MILLI_OUT_OF_RANGE:{milli}")
+    return milli / 1000.0
+
+
 def novelty_from_classification(receipt: dict) -> dict:
-    """Map one oracle receipt to the published scalar. Holdout gets no reward."""
+    """Read the scalar the native oracle already chose. Holdout gets no reward."""
     if receipt.get("decision") != "CLASSIFIED":
         return {"novelty_reward": 0.0, "novelty_source": "oracle_refused", "split": None}
     distance = int(receipt["corpus_distance"])
     if distance < 0 or distance > CORPUS_DISTANCE_DENOMINATOR:
         raise ValueError(f"CORPUS_DISTANCE_OUT_OF_RANGE:{distance}")
-    graded = 0.2 + 0.3 * (distance / CORPUS_DISTANCE_DENOMINATOR)
+    novelty = milli_to_reward(int(receipt["novelty_milli"]))
+    graded = milli_to_reward(int(receipt["graded_milli"]))
     if int(receipt["holdout"]) == 1:
+        if novelty != 0.0:
+            raise ValueError("HOLDOUT_TRAINING_REWARD")
         return {
             "novelty_reward": 0.0,
             "held_out_novelty": graded,
@@ -48,12 +56,8 @@ def novelty_from_classification(receipt: dict) -> dict:
             "split": "holdout",
         }
     if int(receipt["train_visited"]) == 1:
-        return {
-            "novelty_reward": 0.1 if distance == 0 else 0.15,
-            "novelty_source": "train_corpus",
-            "split": "train",
-        }
-    return {"novelty_reward": graded, "novelty_source": "unvisited_graded", "split": "train"}
+        return {"novelty_reward": novelty, "novelty_source": "train_corpus", "split": "train"}
+    return {"novelty_reward": novelty, "novelty_source": "unvisited_graded", "split": "train"}
 
 def compute_proposal_reward(
     admission_bin: Path,
@@ -64,7 +68,7 @@ def compute_proposal_reward(
     """
     Evaluates an untrusted model proposal using Sounio's native admission engine.
     Reward:
-      syntax 0.1, native admission 0.4, and novelty from novelty_from_classification.
+      syntax 0.1, native admission 0.4, and novelty_milli / 1000 from the oracle.
       A kind=2 proposal without the oracle scores novelty 0. It never scores 0.5
       merely because its phase is nonzero. Kind=1 remains a fixed 0.3 lowering
       term and is labeled unclassified.

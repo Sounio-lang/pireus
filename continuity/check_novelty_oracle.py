@@ -55,6 +55,13 @@ def main():
         class_id = expected[code]
         counts[class_id] += 1
         distance = abs(details[class_id]["commutator_defects"] - 210) + abs(details[class_id]["square_negative_count"] - 15)
+        graded_milli = (26000 + 300 * distance) // 130
+        if class_id in holdout:
+            novelty_milli = 0
+        elif class_id in visited:
+            novelty_milli = 100 if distance == 0 else 150
+        else:
+            novelty_milli = graded_milli
         if (
             got["quadratic_code"] != code
             or got["class_id"] != class_id
@@ -63,6 +70,8 @@ def main():
             or got["commutator_defect"] != details[class_id]["commutator_defects"]
             or got["square_negative_count"] != details[class_id]["square_negative_count"]
             or got["corpus_distance"] != distance
+            or got["novelty_milli"] != novelty_milli
+            or got["graded_milli"] != graded_milli
             or got["claim_ready"] is not False
         ):
             raise SystemExit(f"mismatch at phase {phase}: {got}")

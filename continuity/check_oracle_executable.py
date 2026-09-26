@@ -45,7 +45,13 @@ def main() -> int:
         phase = phase_for_code(code)
         proc = subprocess.run([str(args.oracle), str(phase)], capture_output=True, text=True, check=True)
         got = json.loads(proc.stdout)
-        if got["quadratic_code"] != code or got["class_id"] != class_id or got["claim_ready"] is not False:
+        if (
+            got["quadratic_code"] != code
+            or got["class_id"] != class_id
+            or "novelty_milli" not in got
+            or "graded_milli" not in got
+            or got["claim_ready"] is not False
+        ):
             mismatches.append({"code": code, "phase": phase, "got": got, "expected_class": class_id})
             if len(mismatches) == 5:
                 break
