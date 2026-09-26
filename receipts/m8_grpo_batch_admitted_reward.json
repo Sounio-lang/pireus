@@ -198,6 +198,7 @@
   ],
   "reward_authority": "continuity/novelty_oracle.sio admitted_reward_milli",
   "python_reward_sum": false,
+  "reward_derived_from_milli": true,
   "compiler": "committed prebuilt bin/madaros-linux-x86_64",
   "compiler_sha256": "31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80",
   "compiler_from_source": false,

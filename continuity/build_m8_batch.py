@@ -76,6 +76,9 @@ def main():
         if row.get("admitted_reward_milli") != row.get("reward_milli"):
             print("reward_milli was not copied from the oracle", file=sys.stderr)
             return 1
+        if row.get("reward") != row.get("reward_milli") / 1000:
+            print("reward was not derived from reward_milli", file=sys.stderr)
+            return 1
         if row.get("novelty_milli") is None or row.get("reward_milli") != 500 + int(row["novelty_milli"]):
             print("missing native reward_milli", file=sys.stderr)
             return 1

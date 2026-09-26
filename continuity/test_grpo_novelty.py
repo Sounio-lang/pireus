@@ -70,6 +70,7 @@ class NoveltyMapTest(unittest.TestCase):
         self.assertEqual(total, 5199)
         self.assertEqual(centered, 19481656)
         self.assertEqual(deviations, [-399, 1, 2393, 2801, -1199, -1199, -1199, -1199])
+        self.assertEqual([reward / 1000 for reward in rewards], [0.6, 0.65, 0.949, 1.0, 0.5, 0.5, 0.5, 0.5])
         self.assertNotEqual(centered, 0)
         self.assertEqual(len(rewards) ** 3, 512)
 

@@ -69,10 +69,10 @@ def compute_proposal_reward(
     """
     Evaluates an untrusted model proposal using Sounio's native admission engine.
     Reward:
-      syntax 0.1, native admission 0.4, and novelty_milli / 1000 from the oracle.
-      A kind=2 proposal without the oracle scores novelty 0. It never scores 0.5
-      merely because its phase is nonzero. Kind=1 remains a fixed 0.3 lowering
-      term and is labeled unclassified.
+      reward_milli is the authority. reward is that integer divided by 1000.
+      Admitted kind=2 copies admitted_reward_milli from the oracle. Without the
+      oracle its novelty term stays 0. Kind=1 remains the fixed 800 thousandths
+      labeled unclassified. A nonzero phase never scores novelty by itself.
     """
     result = {
         "proposal": str(proposal_path),
@@ -104,8 +104,8 @@ def compute_proposal_reward(
         return result
 
     result["syntax_reward"] = 0.1
-    result["reward"] += 0.1
     result["reward_milli"] = 100
+    result["reward"] = result["reward_milli"] / 1000.0
 
     # Run native Sounio admission engine
     try:
@@ -142,8 +142,8 @@ def compute_proposal_reward(
     # Admitted
     result["admitted"] = True
     result["admission_reward"] = 0.4
-    result["reward"] += 0.4
     result["reward_milli"] = 500
+    result["reward"] = result["reward_milli"] / 1000.0
     result["plan_id"] = receipt.get("plan_id")
     result["tensor_sha256"] = receipt.get("tensor_sha256")
 
@@ -151,8 +151,8 @@ def compute_proposal_reward(
     if kind != 2:
         result["novelty_reward"] = 0.3
         result["novelty_source"] = "unclassified_lowering"
-        result["reward"] += 0.3
         result["reward_milli"] = 800
+        result["reward"] = result["reward_milli"] / 1000.0
         return result
 
     if novelty_bin is None:
@@ -170,8 +170,8 @@ def compute_proposal_reward(
     result["novelty_milli"] = int(classification["novelty_milli"])
     result["admitted_reward_milli"] = int(classification["admitted_reward_milli"])
     result["reward_milli"] = result["admitted_reward_milli"]
+    result["reward"] = result["reward_milli"] / 1000.0
     result["novelty_reward"] = graded["novelty_reward"]
-    result["reward"] += graded["novelty_reward"]
     result["class_id"] = classification.get("class_id")
     result["corpus_distance"] = classification.get("corpus_distance")
     result["train_visited"] = classification.get("train_visited")
