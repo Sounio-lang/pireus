@@ -54,7 +54,8 @@ structure Boundary where
   consistencyProved : Bool
   orbitEnumeration : Bool
   admissionDecided : Bool
-  executableBindingProved : Bool
+  semanticBindingProved : Bool
+  byteBindingProved : Bool
   claimReady : Bool
 deriving DecidableEq, Repr
 
@@ -62,14 +63,16 @@ def boundary : Boundary :=
   { consistencyProved := true
   , orbitEnumeration := false
   , admissionDecided := false
-  , executableBindingProved := false
+  , semanticBindingProved := true
+  , byteBindingProved := false
   , claimReady := false }
 
 theorem quadratic_group_moment_consistency_does_not_promote_a_claim :
     boundary.consistencyProved = true
       && boundary.orbitEnumeration = false
       && boundary.admissionDecided = false
-      && boundary.executableBindingProved = false
+      && boundary.semanticBindingProved = true
+      && boundary.byteBindingProved = false
       && boundary.claimReady = false := by
   decide
 

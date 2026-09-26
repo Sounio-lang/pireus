@@ -107,7 +107,8 @@ structure Boundary where
   admissionDecided : Bool
   orbitRerun : Bool
   commutatorRecomputed : Bool
-  executableBindingProved : Bool
+  semanticBindingProved : Bool
+  byteBindingProved : Bool
   claimReady : Bool
 deriving DecidableEq, Repr
 
@@ -117,7 +118,8 @@ def boundary : Boundary :=
   , admissionDecided := false
   , orbitRerun := false
   , commutatorRecomputed := false
-  , executableBindingProved := false
+  , semanticBindingProved := true
+  , byteBindingProved := false
   , claimReady := false }
 
 theorem quadratic_novelty_scalar_does_not_promote_a_claim :
@@ -126,7 +128,8 @@ theorem quadratic_novelty_scalar_does_not_promote_a_claim :
       && boundary.admissionDecided = false
       && boundary.orbitRerun = false
       && boundary.commutatorRecomputed = false
-      && boundary.executableBindingProved = false
+      && boundary.semanticBindingProved = true
+      && boundary.byteBindingProved = false
       && boundary.claimReady = false := by
   decide
 

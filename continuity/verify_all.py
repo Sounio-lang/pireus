@@ -105,7 +105,13 @@ def main():
             "admitted_count": batch["admitted_count"],
         }
 
-        # 7. Exhaustive 65536-phase check (needs numpy for the explorer)
+        # 7. ELF release hash check
+        out = run([sys.executable, str(HERE / "check_elf_release.py"),
+                   "--elf-dir", str(args.admission_bin.parent)],
+                  "elf-release-hash")
+        results["elf_release"] = json.loads(out)
+
+        # 8. Exhaustive 65536-phase check (needs numpy for the explorer)
         try:
             import numpy  # noqa: F401
             out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),

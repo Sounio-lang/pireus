@@ -50,7 +50,8 @@ structure Boundary where
   phaseToCodeProved : Bool
   orbitEnumeration : Bool
   admissionDecided : Bool
-  executableBindingProved : Bool
+  semanticBindingProved : Bool
+  byteBindingProved : Bool
   claimReady : Bool
 deriving DecidableEq, Repr
 
@@ -58,14 +59,16 @@ def boundary : Boundary :=
   { phaseToCodeProved := true
   , orbitEnumeration := false
   , admissionDecided := false
-  , executableBindingProved := false
+  , semanticBindingProved := true
+  , byteBindingProved := false
   , claimReady := false }
 
 theorem quadratic_phase_to_code_does_not_promote_a_claim :
     boundary.phaseToCodeProved = true
       && boundary.orbitEnumeration = false
       && boundary.admissionDecided = false
-      && boundary.executableBindingProved = false
+      && boundary.semanticBindingProved = true
+      && boundary.byteBindingProved = false
       && boundary.claimReady = false := by
   decide
 
