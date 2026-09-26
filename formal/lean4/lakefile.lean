@@ -312,6 +312,12 @@ lean_lib «SounioPireusQuadraticGroupMoment» where
 lean_lib «SounioPireusQuadraticGroupMomentAxiomAudit» where
 
 @[default_target]
+lean_lib «SounioPireusQuadraticGroupMomentConsistency» where
+
+@[default_target]
+lean_lib «SounioPireusQuadraticGroupMomentConsistencyAxiomAudit» where
+
+@[default_target]
 lean_lib «SounioPireusSignTableBitVecLex» where
 
 @[default_target]

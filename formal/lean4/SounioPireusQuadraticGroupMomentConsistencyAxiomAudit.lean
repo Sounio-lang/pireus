@@ -1,0 +1,6 @@
+import SounioPireusQuadraticGroupMomentConsistency
+
+open SounioPireusQuadraticGroupMomentConsistency
+
+#print axioms quadratic_group_moment_consistency
+#print axioms quadratic_group_moment_consistency_does_not_promote_a_claim
