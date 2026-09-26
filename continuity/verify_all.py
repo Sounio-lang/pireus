@@ -111,7 +111,11 @@ def main():
             out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
                        "--oracle", str(args.novelty_bin)],
                       "oracle-65536-phases", timeout=600)
-            results["oracle_65536"] = json.loads(out)
+            # The explorer prints progress before the JSON. Extract the last JSON object.
+            json_start = out.rfind("{\n")
+            if json_start < 0:
+                json_start = out.rfind("{")
+            results["oracle_65536"] = json.loads(out[json_start:])
         except ImportError:
             results["oracle_65536"] = "skipped_no_numpy"
     else:
