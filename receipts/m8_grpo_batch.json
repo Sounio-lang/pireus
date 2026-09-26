@@ -176,5 +176,22 @@
     "phases_checked": 65536,
     "mismatches": 0,
     "oracle_sha256": "2fc7909e0820dee6d35f9268b2d8aa836dcc45095262cf91c6811de27411becc"
+  },
+  "committed_rerun": {
+    "completed_utc": "2026-09-26T00:40:00Z",
+    "require_committed_madaros": true,
+    "resolved_elf": "bin/madaros-linux-x86_64",
+    "resolved_md5": "57c015c1",
+    "resolved_sha256": "31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80",
+    "provenance": "COMMITTED prebuilt; souc reports it is not built from tree 23ffa31e3d",
+    "from_source_build": false,
+    "admission_sha256": "a1d17b8ad6e760ea8b9536174e55d62bccb92a6b449e83144b9f5a62e033fd74",
+    "novelty_sha256": "2fc7909e0820dee6d35f9268b2d8aa836dcc45095262cf91c6811de27411becc",
+    "elfs_byte_identical_to_local_build": true,
+    "oracle_phases_checked": 65536,
+    "oracle_mismatches": 0,
+    "reward_rows_identical": true,
+    "reward_variance": 0.038067372411242605,
+    "advantage_degenerate": false
   }
 }
