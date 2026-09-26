@@ -4,6 +4,9 @@ stage=FINITE_COMPUTATIONAL_PARITY_ONLY
 claim_ready=false
 source_table_entries_matched=1024
 source_table=continuity/novelty_oracle.sio class_of
+behavioral_executable_check=receipts/m8_oracle_executable.behavioral
+behavioral_codes_matched=1024
+behavioral_byte_binding=false
 executable_binding_proved=false
 kernel_axiom_free=false
 

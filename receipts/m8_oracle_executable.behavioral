@@ -1,0 +1,27 @@
+schema=pireus-m8-oracle-executable-behavioral-v1
+status=PASS
+stage=BEHAVIORAL_CLASS_EQUALITY
+claim_ready=false
+completed_utc=2026-09-26T01:57:43Z
+
+codes_checked=1024
+mismatches=0
+elapsed_seconds=0.44
+binding=behavioral
+byte_binding=false
+lean_executable_binding_proved=false
+
+oracle_elf=/tmp/pireus-m8-committed/novelty.elf
+oracle_elf_sha256=2fc7909e0820dee6d35f9268b2d8aa836dcc45095262cf91c6811de27411becc
+oracle_source=continuity/novelty_oracle.sio
+oracle_source_sha256=37916fe406954168d0408bd7595c39254cdd40cd7c441f26a68ab6efb26d6f85
+checker=continuity/check_oracle_executable.py
+checker_sha256=e35a517a8981fb98bc463911bb7ccff0176e29f0ff0efd6932cadcfa595310b1
+compiler=committed prebuilt bin/madaros-linux-x86_64
+compiler_sha256=31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80
+compiler_from_source=false
+
+phase_selection=quadratic code bits 0..3 at phase bits 0,5,10,15; bits 4..9 at phase bits 1,2,3,6,7,11; opposite triangle zero
+matched_fields=quadratic_code,class_id,claim_ready
+host=Linux 7.0.2-5-pve x86_64
+gpu_execution=false
