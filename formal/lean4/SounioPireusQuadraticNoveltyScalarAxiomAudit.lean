@@ -1,0 +1,6 @@
+import SounioPireusQuadraticNoveltyScalar
+
+open SounioPireusQuadraticNoveltyScalar
+
+#print axioms quadratic_novelty_scalar
+#print axioms quadratic_novelty_scalar_does_not_promote_a_claim

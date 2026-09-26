@@ -300,6 +300,12 @@ lean_lib «SounioPireusQuadraticOrbitCertificate» where
 lean_lib «SounioPireusQuadraticOrbitCertificateAxiomAudit» where
 
 @[default_target]
+lean_lib «SounioPireusQuadraticNoveltyScalar» where
+
+@[default_target]
+lean_lib «SounioPireusQuadraticNoveltyScalarAxiomAudit» where
+
+@[default_target]
 lean_lib «SounioPireusSignTableBitVecLex» where
 
 @[default_target]
