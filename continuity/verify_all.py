@@ -42,10 +42,10 @@ def run(cmd, label, timeout=600, cwd=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--admission-bin", type=Path, required=True)
-    parser.add_argument("--novelty-bin", type=Path, required=True)
-    parser.add_argument("--group-bin", type=Path, required=True)
-    parser.add_argument("--lean-dir", type=Path, required=True)
+    parser.add_argument("--admission-bin", type=Path, default=None)
+    parser.add_argument("--novelty-bin", type=Path, default=None)
+    parser.add_argument("--group-bin", type=Path, default=None)
+    parser.add_argument("--lean-dir", type=Path, default=None)
     parser.add_argument("--skip-exhaustive", action="store_true",
                         help="Skip the 65536-phase check (needs the explorer tree)")
     parser.add_argument("--skip-lean", action="store_true",
@@ -54,63 +54,70 @@ def main():
 
     results = {}
     started = time.perf_counter()
-
-    # 1. Python unit tests
     import os
-    os.environ["PIREUS_NOVELTY_ORACLE"] = str(args.novelty_bin)
-    os.environ["PIREUS_GROUP_VARIANCE"] = str(args.group_bin)
+    have_elfs = bool(args.admission_bin and args.novelty_bin and args.group_bin)
+
+    if args.novelty_bin:
+        os.environ["PIREUS_NOVELTY_ORACLE"] = str(args.novelty_bin)
+    if args.group_bin:
+        os.environ["PIREUS_GROUP_VARIANCE"] = str(args.group_bin)
+
+    # 1. Python unit tests (no ELF required)
     run([sys.executable, str(HERE / "test_grpo_novelty.py")], "python-unit-tests")
 
-    # 2. Admission tests (38 cases)
-    run([sys.executable, str(HERE / "test_admission.py"), str(args.admission_bin)],
-        "admission-tests")
+    if have_elfs:
+        # 2. Admission tests (38 cases)
+        run([sys.executable, str(HERE / "test_admission.py"), str(args.admission_bin)],
+            "admission-tests")
 
-    # 3. Oracle executable check (1024 codes)
-    out = run([sys.executable, str(HERE / "check_oracle_executable.py"),
-               "--oracle", str(args.novelty_bin),
-               "--source", str(HERE / "novelty_oracle.sio")],
-              "oracle-1024-codes")
-    results["oracle_1024"] = json.loads(out)
+        # 3. Oracle executable check (1024 codes)
+        out = run([sys.executable, str(HERE / "check_oracle_executable.py"),
+                   "--oracle", str(args.novelty_bin),
+                   "--source", str(HERE / "novelty_oracle.sio")],
+                  "oracle-1024-codes")
+        results["oracle_1024"] = json.loads(out)
 
-    # 4. Semantic binding (1024 codes, 9 fields)
-    out = run([sys.executable, str(HERE / "check_semantic_binding.py"),
-               "--oracle", str(args.novelty_bin),
-               "--source", str(HERE / "novelty_oracle.sio")],
-              "semantic-binding-1024-codes")
-    results["semantic_binding"] = json.loads(out)
+        # 4. Semantic binding (1024 codes, 9 fields)
+        out = run([sys.executable, str(HERE / "check_semantic_binding.py"),
+                   "--oracle", str(args.novelty_bin),
+                   "--source", str(HERE / "novelty_oracle.sio")],
+                  "semantic-binding-1024-codes")
+        results["semantic_binding"] = json.loads(out)
 
-    # 5. Group variance vectors (10 vectors)
-    out = run([sys.executable, str(HERE / "check_group_variance.py"),
-               "--oracle", str(args.group_bin)],
-              "group-variance-10-vectors")
-    results["group_variance"] = json.loads(out)
+        # 5. Group variance vectors (10 vectors)
+        out = run([sys.executable, str(HERE / "check_group_variance.py"),
+                   "--oracle", str(args.group_bin)],
+                  "group-variance-10-vectors")
+        results["group_variance"] = json.loads(out)
 
-    # 5. Eight-proposal batch
-    out = run([sys.executable, str(HERE / "build_m8_batch.py"),
-               "--admission-bin", str(args.admission_bin),
-               "--novelty-bin", str(args.novelty_bin),
-               "--group-bin", str(args.group_bin),
-               "--work-dir", "/tmp/pireus-verify-all"],
-              "m8-batch")
-    batch = json.loads(out)
-    results["m8_batch"] = {
-        "reward_sum": batch["reward_sum"],
-        "centered_sum_squares": batch["centered_sum_squares"],
-        "variance_denominator": batch["variance_denominator"],
-        "advantage_degenerate": batch["advantage_degenerate"],
-        "holdout_count": batch["holdout_count"],
-        "admitted_count": batch["admitted_count"],
-    }
+        # 6. Eight-proposal batch
+        out = run([sys.executable, str(HERE / "build_m8_batch.py"),
+                   "--admission-bin", str(args.admission_bin),
+                   "--novelty-bin", str(args.novelty_bin),
+                   "--group-bin", str(args.group_bin),
+                   "--work-dir", "/tmp/pireus-verify-all"],
+                  "m8-batch")
+        batch = json.loads(out)
+        results["m8_batch"] = {
+            "reward_sum": batch["reward_sum"],
+            "centered_sum_squares": batch["centered_sum_squares"],
+            "variance_denominator": batch["variance_denominator"],
+            "advantage_degenerate": batch["advantage_degenerate"],
+            "holdout_count": batch["holdout_count"],
+            "admitted_count": batch["admitted_count"],
+        }
 
-    # 6. Exhaustive 65536-phase check (needs the explorer tree)
-    if not args.skip_exhaustive:
-        out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
-                   "--oracle", str(args.novelty_bin)],
-                  "oracle-65536-phases", timeout=600)
-        results["oracle_65536"] = json.loads(out)
+        # 7. Exhaustive 65536-phase check (needs the explorer tree)
+        if not args.skip_exhaustive:
+            out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
+                       "--oracle", str(args.novelty_bin)],
+                      "oracle-65536-phases", timeout=600)
+            results["oracle_65536"] = json.loads(out)
+    else:
+        results["elf_checks"] = "skipped_no_binaries"
 
-    # 7. Lean certificates
-    if not args.skip_lean:
+    # 8. Lean certificates
+    if not args.skip_lean and args.lean_dir:
         lean_targets = [
             "SounioPireusQuadraticOrbitCertificate",
             "SounioPireusQuadraticOrbitCertificateAxiomAudit",
@@ -138,15 +145,18 @@ def main():
 
     elapsed = round(time.perf_counter() - started, 3)
     receipt = {
-        "schema": "pireus-verify-all-v1",
+        "schema": "pireus-verify-all-v2",
         "status": "PASS",
         "claim_ready": False,
         "elapsed_seconds": elapsed,
-        "admission_elf_sha256": sha256(args.admission_bin),
-        "novelty_elf_sha256": sha256(args.novelty_bin),
-        "group_elf_sha256": sha256(args.group_bin),
+        "elf_checks": "ran" if have_elfs else "skipped",
+        "lean_checks": "ran" if (not args.skip_lean and args.lean_dir) else "skipped",
         "results": results,
     }
+    if have_elfs:
+        receipt["admission_elf_sha256"] = sha256(args.admission_bin)
+        receipt["novelty_elf_sha256"] = sha256(args.novelty_bin)
+        receipt["group_elf_sha256"] = sha256(args.group_bin)
     print(json.dumps(receipt, indent=2))
     return 0
 
