@@ -1,0 +1,70 @@
+// Integer population variance of a GRPO group.
+// Each argument is one reward in thousandths. The centered sum of squares is
+// Σ (count * reward - sum)^2, and the variance denominator is count^3.
+// Zero centered sum is the only degeneracy bit. This does not classify a
+// phase, admit a proposal, or promote a claim.
+
+fn parse_milli(text: string) -> i64 with Mut {
+    let n = str_len(text)
+    if n <= 0 || n > 7 { return -1 }
+    var value: i64 = 0
+    var i: i64 = 0
+    while i < n {
+        let c = str_char_at(text, i)
+        if c < 48 || c > 57 { return -1 }
+        value = value * 10 + (c - 48)
+        i = i + 1
+    }
+    value
+}
+
+fn refuse(reason: string) -> i32 with IO {
+    print("{\"schema\":1,\"authority\":\"Sounio\",\"oracle\":\"group_variance\",\"decision\":\"REFUSE\",\"reason\":\"")
+    print(reason)
+    print("\",\"claim_ready\":false}\n")
+    1
+}
+
+fn main() -> i32 with IO, Mut, Panic {
+    let count = arg_count()
+    if count < 1 || count > 16 { return refuse("ARGUMENTS") }
+    var rewards: [i64; 16] = [0; 16]
+    var index: i64 = 0
+    while index < count {
+        let reward = parse_milli(get_arg(index))
+        if reward < 0 || reward > 1000000 { return refuse("REWARD_RANGE") }
+        rewards[index as usize] = reward
+        index = index + 1
+    }
+    var sum: i64 = 0
+    index = 0
+    while index < count {
+        sum = sum + rewards[index as usize]
+        index = index + 1
+    }
+    var centered: i64 = 0
+    index = 0
+    while index < count {
+        var diff = count * rewards[index as usize] - sum
+        if diff < 0 { diff = 0 - diff }
+        centered = centered + diff * diff
+        index = index + 1
+    }
+    let denominator = count * count * count
+    var degenerate = "false"
+    if centered == 0 { degenerate = "true" }
+    print("{\"schema\":1,\"authority\":\"Sounio\",\"oracle\":\"group_variance\",\"decision\":\"COMPUTED\",\"count\":")
+    print_int(count)
+    print(",\"reward_sum\":")
+    print_int(sum)
+    print(",\"centered_sum_squares\":")
+    print_int(centered)
+    print(",\"variance_numerator\":")
+    print_int(centered)
+    print(",\"variance_denominator\":")
+    print_int(denominator)
+    print(",\"degenerate\":")
+    print(degenerate)
+    print(",\"claim_ready\":false}\n")
+    0
+}

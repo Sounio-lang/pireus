@@ -60,6 +60,25 @@ class NoveltyMapTest(unittest.TestCase):
         self.assertGreater(len({round(row["advantage"], 6) for row in rows}), 1)
         self.assertTrue(any(row["advantage"] != 0.0 for row in rows))
 
+    def test_published_eight_have_nonzero_integer_moment(self):
+        rewards = (600, 650, 949, 1000, 500, 500, 500, 500)
+        total = sum(rewards)
+        centered = sum((len(rewards) * reward - total) ** 2 for reward in rewards)
+        self.assertEqual(total, 5199)
+        self.assertEqual(centered, 19481656)
+        self.assertNotEqual(centered, 0)
+        self.assertEqual(len(rewards) ** 3, 512)
+
+    def test_live_group_variance_when_present(self):
+        binary = Path("/tmp/pireus_group_variance.elf")
+        if not binary.is_file():
+            self.skipTest("native group variance is built on the Sounio workspace")
+        stats = engine.group_statistics(binary, [600, 650, 949, 1000, 500, 500, 500, 500])
+        self.assertFalse(stats["degenerate"])
+        self.assertEqual(stats["reward_sum"], 5199)
+        self.assertEqual(stats["centered_sum_squares"], 19481656)
+        self.assertEqual(stats["variance_denominator"], 512)
+
     def test_live_oracle_when_present(self):
         binary = Path("/tmp/pireus_novelty_oracle.elf")
         if not binary.is_file():

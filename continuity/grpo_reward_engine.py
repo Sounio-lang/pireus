@@ -4,8 +4,9 @@ Pireus M6/M8 GRPO reward engine.
 
 admission.sio decides well-formedness. novelty_oracle.sio decides the orbit
 class, the training split, and the published novelty scalar in thousandths.
-Python converts those thousandths and computes the group mean and variance.
-It does not infer a class or a novelty scalar from a phase.
+Python converts those thousandths. Group degeneracy is the integer centered
+sum of squares from group_variance.sio, not a float variance. Python does not
+infer a class, a novelty scalar, or that bit from a phase.
 """
 import argparse
 import hashlib
@@ -163,12 +164,32 @@ def compute_proposal_reward(
         return result
     graded = novelty_from_classification(classification)
     result.update(graded)
+    result["novelty_milli"] = int(classification["novelty_milli"])
     result["novelty_reward"] = graded["novelty_reward"]
     result["reward"] += graded["novelty_reward"]
     result["class_id"] = classification.get("class_id")
     result["corpus_distance"] = classification.get("corpus_distance")
     result["train_visited"] = classification.get("train_visited")
     return result
+
+def group_statistics(group_bin: Path, reward_millis: list[int]) -> dict:
+    """Read the integer population moment. Degeneracy is not a float compare."""
+    proc = subprocess.run(
+        [str(group_bin), *[str(int(reward)) for reward in reward_millis]],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    if not proc.stdout.strip():
+        raise RuntimeError(proc.stderr.strip() or "EMPTY_GROUP_VARIANCE_OUTPUT")
+    stats = json.loads(proc.stdout)
+    if stats.get("decision") != "COMPUTED" or stats.get("claim_ready") is not False:
+        raise RuntimeError(f"GROUP_VARIANCE_REFUSED:{stats}")
+    if int(stats["count"]) != len(reward_millis) or int(stats["variance_numerator"]) != int(stats["centered_sum_squares"]):
+        raise RuntimeError(f"GROUP_VARIANCE_SHAPE:{stats}")
+    return stats
+
 
 def evaluate_group_relative_advantages(group_results: list, epsilon: float = 1e-8) -> list:
     """

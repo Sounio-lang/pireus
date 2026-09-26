@@ -2,6 +2,7 @@
 """Build one M8 reward batch from the native admission and novelty executables.
 
 The historical M5 and M7 atlas files are not inputs and are not rewritten.
+Degeneracy comes from group_variance.sio. Float variance is not consulted.
 """
 import argparse
 import hashlib
@@ -38,6 +39,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--admission-bin", type=Path, required=True)
     parser.add_argument("--novelty-bin", type=Path, required=True)
+    parser.add_argument("--group-bin", type=Path, required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     args = parser.parse_args()
     work = args.work_dir
@@ -71,31 +73,43 @@ def main():
     for path in sorted(proposals.glob("*.proposal.json")):
         row = engine.compute_proposal_reward(args.admission_bin, context_path, path, args.novelty_bin)
         row["proposal"] = path.name
+        if row.get("novelty_milli") is None:
+            print("missing novelty_milli", file=sys.stderr)
+            return 1
+        row["reward_milli"] = 500 + int(row["novelty_milli"])
         rows.append(row)
-    rows = engine.evaluate_group_relative_advantages(rows)
-    rewards = [row["reward"] for row in rows]
-    mean = sum(rewards) / len(rewards)
-    variance = sum((reward - mean) ** 2 for reward in rewards) / len(rewards)
+    stats = engine.group_statistics(args.group_bin, [row["reward_milli"] for row in rows])
+    holdout_millis = [row["reward_milli"] for row in rows if row.get("split") == "holdout"]
     payload = {
-        "schema": "pireus-grpo-reward-batch-v2",
+        "schema": "pireus-grpo-reward-batch-v4",
         "claim_ready": False,
         "historical_atlas_rewritten": False,
+        "supersedes_prior_batches": False,
+        "degeneracy_authority": "continuity/group_variance.sio",
         "holdout_classes": list(engine.HOLDOUT_CLASSES),
-        "holdout_count": sum(row.get("split") == "holdout" for row in rows),
-        "advantage_degenerate": variance == 0.0,
-        "reward_variance": variance,
+        "holdout_count": len(holdout_millis),
+        "advantage_degenerate": bool(stats["degenerate"]),
+        "reward_sum": int(stats["reward_sum"]),
+        "centered_sum_squares": int(stats["centered_sum_squares"]),
+        "variance_denominator": int(stats["variance_denominator"]),
         "total_proposals": len(rows),
         "admitted_count": sum(row["admitted"] for row in rows),
-        "mean_reward": mean,
         "admission_sha256": hashlib.sha256(args.admission_bin.read_bytes()).hexdigest(),
         "novelty_sha256": hashlib.sha256(args.novelty_bin.read_bytes()).hexdigest(),
+        "group_sha256": hashlib.sha256(args.group_bin.read_bytes()).hexdigest(),
         "evaluations": rows,
     }
     if payload["admitted_count"] != len(CASES) or payload["advantage_degenerate"] or payload["holdout_count"] != 4:
         print(json.dumps(payload, indent=2), file=sys.stderr)
         return 1
-    if any(row["reward"] >= 1.0 for row in rows if row.get("novelty_source") == "train_corpus"):
-        print("visited corpus reward reached 1.0", file=sys.stderr)
+    if len(set(holdout_millis)) != 1:
+        print("holdout rewards differ", file=sys.stderr)
+        return 1
+    if any(row["reward_milli"] >= 1000 for row in rows if row.get("novelty_source") == "train_corpus"):
+        print("visited corpus reward reached 1000 thousandths", file=sys.stderr)
+        return 1
+    if payload["reward_sum"] != 5199 or payload["centered_sum_squares"] != 19481656 or payload["variance_denominator"] != 512:
+        print("integer moment does not match the published eight rewards", file=sys.stderr)
         return 1
     json.dump(payload, sys.stdout, indent=2)
     sys.stdout.write("\n")
