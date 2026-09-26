@@ -324,6 +324,12 @@ lean_lib «SounioPireusQuadraticPipeline» where
 lean_lib «SounioPireusQuadraticPipelineAxiomAudit» where
 
 @[default_target]
+lean_lib «SounioPireusQuadraticPhaseToCode» where
+
+@[default_target]
+lean_lib «SounioPireusQuadraticPhaseToCodeAxiomAudit» where
+
+@[default_target]
 lean_lib «SounioPireusSignTableBitVecLex» where
 
 @[default_target]

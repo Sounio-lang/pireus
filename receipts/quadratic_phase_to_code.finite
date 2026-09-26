@@ -1,0 +1,23 @@
+schema=pireus-quadratic-phase-to-code-v1
+status=PASS
+stage=FINITE_COMPUTATIONAL_PARITY_ONLY
+claim_ready=false
+completed_utc=2026-09-26T12:10:58Z
+
+theorem=SounioPireusQuadraticPhaseToCode.quadratic_phase_to_code
+codes_checked=1024
+roundtrip=phaseToCode (codeToPhase code) == code
+source=continuity/novelty_oracle.sio quadratic_code
+source_sha256=2b4afedc318deaa26b5f93215610863a1e40882e8169682bc4aa3800d7141700
+certificate_sha256=6a912ccb2fb2a013fee2249d7e4c005ec7dc9ef72ed524987df1f3ba58ef702a
+orbit_enumeration=false
+admission_decided=false
+executable_binding_proved=false
+kernel_axiom_free=false
+
+axiom_audit=quadratic_phase_to_code._native.native_decide.ax_1_1
+claim_boundary_axioms=none
+build_target=lake build SounioPireusQuadraticPhaseToCode SounioPireusQuadraticPhaseToCodeAxiomAudit
+build_elapsed_seconds=13
+phase_to_code_build_seconds=4.7
+toolchain=leanprover/lean4:v4.33.0
