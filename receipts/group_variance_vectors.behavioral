@@ -1,0 +1,23 @@
+schema=pireus-group-variance-vectors-behavioral-v1
+status=PASS
+stage=GROUP_VARIANCE_VECTORS
+claim_ready=false
+completed_utc=2026-09-26T12:54:53Z
+
+vectors_checked=10
+mismatches=0
+elapsed_seconds=0.005
+
+vectors=published_eight,degenerate_eight,degenerate_zero,single_maximum,single_zero,two_extremes,sixteen_equal,eight_small,alternating,mixed_fragments
+fields=count,reward_sum,centered_sum_squares,variance_numerator,variance_denominator,degenerate,centered_deviation,claim_ready
+
+oracle_elf_sha256=b96139b4d87dea6291cf3fec44f82240f08f3298a7e61c89de4c71eb0458b83e
+oracle_source=continuity/group_variance.sio
+oracle_source_sha256=46f06d43882f9a5b4b1bb3000ada09ee215d890ad898b6110666ea1636f44642
+checker=continuity/check_group_variance.py
+checker_sha256=0d6ab6716cb93240816326ae23d1742e326de4a77bf2463994c71fd4372a2438
+compiler=committed prebuilt bin/madaros-linux-x86_64
+compiler_sha256=31a15e31847cf06a724c17f154469b9ae54655f1ebbf5284e264456696633f80
+compiler_from_source=false
+gpu_execution=false
+host=Linux 7.0.2-5-pve x86_64
