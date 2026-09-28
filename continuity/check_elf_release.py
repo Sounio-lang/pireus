@@ -17,8 +17,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
 EXPECTED = {
-    "admission.elf": "321c4d9c61603dff4f258b3ef98a1ed41c46c086088e6e286f5e5bd84c75161a",
-    "novelty.elf": "63007d26532facb04ba93b8e956c616eb0b0256f4d908ba2197f068884c3e1d4",
+    "admission.elf": "e3f2427ba5027414faf15fe5bba4a9ec636dd2f62a77eba7855b6844d6403f51",
+    "novelty.elf": "d5da8c524531acca0dfc405800df0efd71fefbe8e2f650b75dbd79c19b5349ff",
     "group_variance.elf": "b96139b4d87dea6291cf3fec44f82240f08f3298a7e61c89de4c71eb0458b83e",
 }
 
