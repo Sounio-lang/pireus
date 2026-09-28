@@ -82,13 +82,20 @@ def main():
                   "semantic-binding-1024-codes")
         results["semantic_binding"] = json.loads(out)
 
-        # 5. Group variance vectors (10 vectors)
+        # 5. Byte-binding corruption triple (read/control/out-of-range)
+        out = run([sys.executable, str(HERE / "check_byte_corruption.py"),
+                   "--oracle", str(args.novelty_bin),
+                   "--source", str(HERE / "novelty_oracle.sio")],
+                  "byte-binding-corruption-triple")
+        results["byte_corruption"] = json.loads(out)
+
+        # 6. Group variance vectors (10 vectors)
         out = run([sys.executable, str(HERE / "check_group_variance.py"),
                    "--oracle", str(args.group_bin)],
                   "group-variance-10-vectors")
         results["group_variance"] = json.loads(out)
 
-        # 6. Eight-proposal batch
+        # 7. Eight-proposal batch
         out = run([sys.executable, str(HERE / "build_m8_batch.py"),
                    "--admission-bin", str(args.admission_bin),
                    "--novelty-bin", str(args.novelty_bin),
@@ -105,13 +112,13 @@ def main():
             "admitted_count": batch["admitted_count"],
         }
 
-        # 7. ELF release hash check
+        # 8. ELF release hash check
         out = run([sys.executable, str(HERE / "check_elf_release.py"),
                    "--elf-dir", str(args.admission_bin.parent)],
                   "elf-release-hash")
         results["elf_release"] = json.loads(out)
 
-        # 8. Exhaustive 65536-phase check (needs numpy for the explorer)
+        # 9. Exhaustive 65536-phase check (needs numpy for the explorer)
         try:
             import numpy  # noqa: F401
             out = run([sys.executable, str(HERE / "check_novelty_oracle.py"),
@@ -127,7 +134,7 @@ def main():
     else:
         results["elf_checks"] = "skipped_no_binaries"
 
-    # 8. Lean certificates
+    # 10. Lean certificates
     if not args.skip_lean and args.lean_dir:
         lean_targets = [
             "SounioPireusQuadraticOrbitCertificate",

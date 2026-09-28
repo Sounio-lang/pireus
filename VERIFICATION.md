@@ -4,7 +4,7 @@ One page. What is proved, what is executed, what is missing.
 
 ## What Lean proves
 
-Eight theorems, all `native_decide`, all with axiom audits.
+Eight main theorems, all `native_decide`. Each boundary also carries `byte_binding_receipt` (`decide`): the equality of the published `novelty.elf` sha256 with the receipt hash. All with axiom audits.
 
 | Theorem | What it proves | Build time |
 |---|---|---|
@@ -36,18 +36,21 @@ Three binaries, compiled from Sounio source by the committed Madaros prebuilt.
 - 1024 codes checked
 - 9 fields: `class_id`, `train_visited`, `holdout`, `commutator_defect`, `square_negative_count`, `corpus_distance`, `novelty_milli`, `graded_milli`, `admitted_reward_milli`
 - 0 mismatches
-- Behavioral equivalence, not byte storage
+- Includes a byte-storage probe: flipping the one table qword the phase reads changes the answer; flipping a control qword does not
+
+## What byte binding shows
+
+`byteBindingProved` is true. The Madaros const-array image feature stores the 1024-entry class table as a read-only image inside `novelty.elf`, and `continuity/check_byte_corruption.py` proves the classifier reads it:
+
+- BINDING: +1 on the slot the phase reads changes the answer
+- CONTROL: +1 on a slot the phase does not read leaves the answer identical
+- CLASS_RANGE: forcing class 99 into the read slot is refused, no out-of-bounds class leaks
+
+Each Lean boundary pins the published `novelty.elf` sha256 against `receipts/elf_byte_binding.probe` (`byte_binding_receipt`, closed by `decide`).
 
 ## What is missing for claim_ready
 
-`byteBindingProved` is false. The class table is not stored as a contiguous literal in the ELF — the Madaros compiler generates runtime initialization. Byte inspection cannot close this gap.
-
-`claim_ready` requires either:
-1. A compiler change that stores the table as a literal, or
-2. A redefinition of `claim_ready` to mean semantic binding, or
-3. Acceptance that `claim_ready` stays false
-
-Currently: option 3. `semanticBindingProved = true`, `byteBindingProved = false`, `claim_ready = false`.
+Orbit enumeration and the admission decision. `orbitEnumeration = false` and `admissionDecided = false` in every boundary; `claim_ready = false` until they are earned. Receipt: `receipts/elf_byte_binding.probe` (`next_step=orbit_enumeration`).
 
 ## How to run everything
 
@@ -61,7 +64,7 @@ Compiles all 3 ELFs from source, runs 8 behavioral checks (including 65,536 phas
 
 ### On GitHub CI (Python + Lean)
 
-`.github/workflows/verify.yml` runs on every push. Python tests + 16 Lean targets. No ELFs (no Madaros on GitHub). Lean cache avoids the 25-minute orbit rebuild.
+`.github/workflows/verify.yml` runs on every push. Python tests + the release ELFs (downloaded from `pireus-elfs-v1`, no Madaros on GitHub) + 16 Lean targets. Lean cache avoids the 25-minute orbit rebuild.
 
 ### Daily cron on the workspace
 
@@ -75,6 +78,7 @@ Compiles all 3 ELFs from source, runs 8 behavioral checks (including 65,536 phas
 | Admission tests (38) | Parse, semantic refusal, lowering reward, operator | Workspace |
 | Oracle 1024 codes | `class_id` matches source table | Workspace |
 | Semantic binding 1024 codes | All 9 fields match Lean spec | Workspace |
+| Byte corruption triple | Read slot flip changes answer; control does not; class 99 refused | CI + workspace |
 | Group variance 10 vectors | Degenerate, extremes, mixed fragments | Workspace |
 | M8 batch (8 proposals) | Reward sum 5199, deviations, holdout | Workspace |
 | Oracle 65,536 phases | Every phase matches explorer partition | Workspace |
