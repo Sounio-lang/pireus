@@ -5,11 +5,17 @@ For each of the 1024 quadratic codes, one phase is chosen and the oracle is
 executed. Every output field is compared against the frozen tables and formulas
 from SounioPireusQuadraticNoveltyScalar.lean. This is behavioral equivalence,
 not byte storage. It proves the binary computes what Lean proves.
+
+The byte_binding field is measured, not asserted: a corruption probe flips one
+qword of the embedded class table the classifier reads (the answer must change)
+and one qword it does not read (the answer must not change). Storage without
+liveness would pass check_elf_table and fail the probe here.
 """
 import argparse
 import hashlib
 import json
 import re
+import struct
 import subprocess
 import time
 from pathlib import Path
@@ -48,6 +54,43 @@ def phase_for_code(code):
     return phase
 
 
+def byte_binding_probe(oracle, classes):
+    """Corruption probe: the embedded table bytes must be live inputs.
+
+    Flips one qword the classifier reads -> the answer must change; flips one
+    qword it does not read -> the answer must not change.
+    """
+    data = bytearray(oracle.read_bytes())
+    packed = struct.pack("<1024q", *classes)
+    off = bytes(data).find(packed)
+    if off < 0:
+        return False, {"probe": "needle_absent"}
+    work = oracle.parent / "byte-binding-probe.elf"
+
+    def run_phase0(buf):
+        work.write_bytes(buf)
+        work.chmod(0o755)
+        return subprocess.run([str(work), "0"],
+                              capture_output=True, text=True).stdout
+
+    pristine = run_phase0(data)
+    qc = int(re.search(r'"quadratic_code":(\d+)', pristine).group(1))
+    mut = bytearray(data)
+    struct.pack_into("<q", mut, off + qc * 8, classes[qc] + 1)
+    flipped = run_phase0(mut) != pristine
+    control_slot = (qc + 1) % 1024
+    mut2 = bytearray(data)
+    struct.pack_into("<q", mut2, off + control_slot * 8, classes[control_slot] + 1)
+    control_stable = run_phase0(mut2) == pristine
+    work.unlink(missing_ok=True)
+    return flipped and control_stable, {
+        "probe_slot": qc,
+        "control_slot": control_slot,
+        "flipped": flipped,
+        "control_stable": control_stable,
+    }
+
+
 def lean_expected(class_id):
     commutator = FROZEN_COMMUTATOR[class_id]
     squares = FROZEN_SQUARES[class_id]
@@ -81,6 +124,7 @@ def main():
     parser.add_argument("--source", type=Path, default=HERE / "novelty_oracle.sio")
     args = parser.parse_args()
     classes = source_classes(args.source)
+    byte_ok, byte_detail = byte_binding_probe(args.oracle, classes)
     mismatches = []
     started = time.perf_counter()
     for code, class_id in enumerate(classes):
@@ -106,7 +150,8 @@ def main():
     print(json.dumps({
         "status": "PASS",
         "binding": "semantic",
-        "byte_binding": False,
+        "byte_binding": byte_ok,
+        "byte_binding_detail": byte_detail,
         "codes_checked": 1024,
         "fields_checked": 9,
         "mismatches": 0,
