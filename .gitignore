@@ -11,3 +11,4 @@ dist/
 target/
 .tmp/
 formal/lean4/lake-manifest.json
+core.[0-9]*
